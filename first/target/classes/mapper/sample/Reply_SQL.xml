@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="reply">
+
+	<select id="selectBoardList" parameterType="hashmap"
+		resultType="hashmap">
+		<include refid="pagingPre" />	
+    <![CDATA[
+          SELECT
+				ROWNUM RNUM,
+			    IDX,
+			    TITLE,
+			    GROUPNUM,
+                PARENT,
+                DEPTH,
+                IDENT,
+			    REPLY_DTM,
+			    REPLY_DEL,
+			    USER_ID,
+			    USER_NICKNAME  
+			    
+			FROM
+			    TB_REPLY_BOARD
+			WHERE
+			    PARENT_IDX = #{IDX}
+		  START WITH 
+              PARENT = 0 
+          CONNECT BY PRIOR 
+              IDX = PARENT
+          ORDER SIBLINGS BY 
+              GROUPNUM ASC
+
+    ]]>
+		<include refid="pagingPost" />
+	</select>
+
+
+
+	<sql id="pagingPre">
+    <![CDATA[
+        SELECT
+            AAA.*
+        FROM(
+            SELECT
+                COUNT(*) OVER() AS TOTAL_COUNT,
+                AA.*
+            FROM(  
+    ]]>
+	</sql>
+
+	<sql id="pagingPost">
+    <![CDATA[
+            ) AA
+        ) AAA
+        WHERE
+            AAA.RNUM BETWEEN #{START} AND #{END}
+    ]]>
+	</sql>
+
+	<insert id="insertReply" parameterType="hashmap">
+	
+    <![CDATA[
+         
+        INSERT INTO TB_REPLY_BOARD
+        (
+            IDX,
+            PARENT_IDX,
+            TITLE, 
+            GROUPNUM,
+            PARENT,
+            DEPTH,
+            IDENT,
+            REPLY_DTM, 
+            USER_ID,
+            USER_NICKNAME         
+        )
+        VALUES
+        (
+            SEQ_TB_REPLY_BOARD_IDX.NEXTVAL,
+            #{BOARDIDX}, 
+            #{TITLE}, 
+    ]]>
+		<choose>
+			<when test="GROUPNUM != null and GROUPNUM.equals('start')">
+			<![CDATA[
+              SEQ_TB_REPLY_BOARD_IDX.NEXTVAL,
+              ]]>
+			</when>
+			<otherwise>
+			<![CDATA[
+				#{GROUPNUM},
+
+             ]]>
+			</otherwise>
+		</choose>
+      <![CDATA[
+            #{PARENT},
+            #{DEPTH},
+            #{IDENT}, 
+            SYSDATE, 
+            #{USER_ID},
+            #{USER_NICKNAME}
+
+        )
+    ]]>
+	</insert>
+
+	<insert id="insertReplyReply" parameterType="hashmap">
+	
+    <![CDATA[
+         
+        INSERT INTO TB_REPLY_BOARD
+        (
+            IDX,
+            PARENT_IDX,
+            TITLE, 
+            GROUPNUM,
+            PARENT,
+            DEPTH,
+            IDENT,
+            REPLY_DTM, 
+            USER_ID,
+            USER_NICKNAME   
+        )
+        VALUES
+        (
+            SEQ_TB_REPLY_BOARD_IDX.NEXTVAL,
+            #{BOARDIDX}, 
+            #{TITLE}, 
+            #{GROUPNUM},
+            #{PARENT},
+            #{DEPTH}+1,
+            #{IDENT}+1, 
+            SYSDATE, 
+            #{USER_ID},
+            #{USER_NICKNAME}
+        )
+    ]]>
+	</insert>
+
+    <!--  댓글 개수 -->
+	<select id="checkreplycount" parameterType="hashmap"
+		resultType="int">
+
+    <![CDATA[
+          SELECT
+			    count(*)
+			    
+			FROM
+			    TB_REPLY_BOARD
+			WHERE
+			    PARENT = #{REPLYIDX}
+
+    ]]>
+
+	</select>
+
+	<update id="updateReplyReply" parameterType="hashmap">
+    <![CDATA[
+        UPDATE TB_REPLY_BOARD
+        SET
+            DEPTH = DEPTH + 1
+        WHERE
+            GROUPNUM  = #{GROUPNUM} 
+        AND 
+            DEPTH > #{DEPTH}   
+    ]]>
+	</update>
+
+	<update id="updateReply" parameterType="hashmap">
+    <![CDATA[
+        UPDATE TB_REPLY_BOARD aa
+        SET
+            TITLE = #{TITLE},
+            REPLY_DTM = SYSDATE
+            
+        WHERE
+            IDX = #{REPLYIDX}
+        AND
+            (USER_ID = #{USER_ID}
+        OR
+        (select mem_LEVEL from tb_member where MEM_ID = #{USER_ID}) = 0)
+    ]]>
+	</update>
+	
+
+	<update id="DeleteReply" parameterType="hashmap">
+    <![CDATA[
+        UPDATE TB_REPLY_BOARD aa
+        SET
+            TITLE = '(삭제된 댓글입니다)',
+            REPLY_DEL = 'Y'          
+        WHERE
+            IDX = #{REPLYIDX}   
+        AND
+            (USER_ID = #{USER_ID}
+        OR
+        (select mem_LEVEL from tb_member where MEM_ID = #{USER_ID}) = 0) 
+    ]]>
+	</update>
+
+	<!-- 유저아이디 삭제 -->
+	<delete id="RealDeleteReply" parameterType="Hashmap">
+		delete from
+		tb_reply_board aa
+		where idx = #{REPLYIDX}
+		AND
+            (USER_ID = #{USER_ID}
+        OR
+        (select mem_LEVEL from tb_member where MEM_ID = #{USER_ID}) = 0)
+
+	</delete>
+
+</mapper>
