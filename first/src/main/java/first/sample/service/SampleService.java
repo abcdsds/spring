@@ -12,10 +12,6 @@ public interface SampleService {
 	
 	void updatePost(Map<String, Object> map, HttpServletRequest request) throws Exception;
 
-	
-	Map<String, Object> selectBoardListSearch(Map<String, Object> map) throws Exception;
-	List<Map<String, Object>> selectBoardList2(Map<String, Object> map) throws Exception;
-
 	Map<String, Object> ReplyList(Map<String, Object> map) throws Exception;
 
 	void ReReplyInsert(Map<String, Object> map) throws Exception;

@@ -27,7 +27,7 @@ public class MemberDAO extends AbstractDAO{
 	public void insertsocialId(User memberVO) throws Exception{
 		insert("member.insertUser", memberVO);
 	}
-	
+
 	public void insertCommonUser(Map<String, Object> map) throws Exception{
 		insert("member.InsertCommonUser", map);
 	}
@@ -46,6 +46,11 @@ public class MemberDAO extends AbstractDAO{
 
 	public void insertLog(User memberVO) throws Exception{
 		insert("member.insertUserLog", memberVO);
+	}
+
+    @SuppressWarnings("unchecked")
+	public Map<String, Object> getOwnContents(Map<String, Object> map) throws Exception {
+		return (Map<String, Object>) selectPagingList("member.getOwnContents", map);
 	}
 
 

@@ -40,7 +40,15 @@
 		</choose>
 
 		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
-			AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+			<choose>
+				<when test="SCH_TYPE.equals('TITLE_CONTENTS')">
+					AND (BOARD_CONTENTS LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%') OR BOARD_TITLE LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%'))
+				</when>
+
+				<otherwise>
+                    AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%') 
+				</otherwise>
+			</choose>
 		</if>
 		<include refid="common.pagingPost" />
 	</select>

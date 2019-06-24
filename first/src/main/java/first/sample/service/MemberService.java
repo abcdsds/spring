@@ -11,5 +11,6 @@ public interface MemberService {
 	User getUserInfo(String userId) throws Exception;
 	void InsertLog(User memberVO) throws Exception;
 	void InsertCommonUser(Map<String, Object> map) throws Exception;
+	Map<String, Object> getOwnContents(Map<String, Object> map) throws Exception;
 
 }

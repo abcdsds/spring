@@ -56,7 +56,6 @@
 					<c:if test="${USER_LEVEL == '0'}">
 						<li><a href="<c:url value='/admin/main.do' />">관리페이지</a></li>
 					</c:if>
-					<li><a href="<c:url value='/board/mycontents.do' />">내 글</a></li>
 					<li><a href="<c:url value='/board/member.do' />">${NICKNAME} 님 환영합니다.</a></li>
 					<li><a href="<c:url value='/logout.do' />">Logout</a></li>
 				</ul>
@@ -83,7 +82,7 @@
 			<ol class="breadcrumb">
 				<li>게시판</li>
 				<li></li>
-				<li class="active">내 글 목록</li>
+				<li class="active">${BOARD_NAME }</li>
 			</ol>
 		</div>
 	</section>
@@ -119,7 +118,10 @@
 											id="SCH_KEYWORD" name="SCH_KEYWORD">
 									</div>
 									<input type="submit" class="btn btn-default" value="검색">
-									
+									<a
+										href="<c:url value='/board/write.do?BOARD_ID=' />${BOARD_ID}"
+										class="pull-right"><span class="btn btn-default"
+										style="margin-right: 15px;">글쓰기</span></a>
 								</form>
 
 							</div>
@@ -143,7 +145,7 @@
 												<tr>
 													<td>${row.BO_NAME}</td>
 													<td><a
-														href="<c:url value='/board/read.do?IDX=' />${row.BOARD_IDX}&BOARD_ID=${row.BOARD_ID}">${row.BOARD_TITLE}</a></td>
+														href="<c:url value='/board/read.do?IDX=' />${row.BOARD_IDX}&BOARD_ID=${BOARD_ID}">${row.BOARD_TITLE}</a></td>
 													<td>${row.USER_NICKNAME}</td>
 													<td>${row.BOARD_HIT_CNT}</td>
 													<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm"

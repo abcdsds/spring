@@ -56,18 +56,8 @@ public class SampleDAO extends AbstractDAO{
         return (Map<String, Object>)selectPagingList("reply.selectBoardList", map);
     }
     
-	
 
-	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> selectBoardList2(Map<String, Object> map) throws Exception{
-		return (List<Map<String, Object>>)selectPagingList2("sample.selectBoardList", map);
-	}
 
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> selectBoardListSearch(Map<String, Object> map) throws Exception{
-		return (Map<String, Object>)selectPagingList("sample.boardsearch", map);
-	}
-	
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> selectBoardList(Map<String, Object> map) throws Exception{
 		return (Map<String, Object>)selectPagingList("sample.selectBoardList", map);

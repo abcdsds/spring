@@ -39,6 +39,41 @@ public class SampleController {
 	@Resource(name="memberService")
 	private MemberService memberService;
 
+	
+	@RequestMapping(value = "/board/mycontents.do")
+	public ModelAndView UserOwnContents(CommandMap commandMap) throws Exception {
+
+		ModelAndView mv = new ModelAndView();
+
+		if(commandMap.get("SCH_TYPE") != null && commandMap.get("SCH_KEYWORD") != null ) {
+			mv.addObject("SCH_TYPE", commandMap.get("SCH_TYPE"));
+			mv.addObject("SCH_KEYWORD", commandMap.get("SCH_KEYWORD"));
+		}
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User memberVO = (User)principal;
+
+
+		commandMap.put("USER_ID", memberVO.getId());
+
+
+		Map<String,Object> contentslist = memberService.getOwnContents(commandMap.getMap());
+		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
+
+
+		mv.addObject("paginationInfo", (PaginationInfo)contentslist.get("paginationInfo"));
+		mv.addObject("contentslist", contentslist.get("result"));
+		mv.addObject("menulist", menulist.get("menulist"));
+
+		mv.addObject("NICKNAME", memberVO.getNickname());
+		mv.addObject("USER_LEVEL", memberVO.getLevel());
+
+
+		mv.setViewName("board/list");
+		return mv;
+	}
+	
+	
 	@RequestMapping(value = "/board/memberupdate.do")
 	public ModelAndView MemberUpdate(CommandMap commandMap) throws Exception {
 

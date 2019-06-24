@@ -1,6 +1,7 @@
 package first.sample.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,12 @@ public class MemberServiceImpl implements MemberService{
 	@Resource(name="memberDAO")
 	private MemberDAO memberDAO;
 
+	@Override
+	public Map<String,Object> getOwnContents(Map<String,Object> map) throws Exception {
+		
+		return memberDAO.getOwnContents(map);
+	}
+	
 	
 	@Override
 	public User getUserInfo(String UserId) throws Exception {

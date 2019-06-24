@@ -94,6 +94,7 @@
 		mem_password = #{password}
 	</select>
 
+
 	<!-- 전체회원수 조회 -->
 	<select id="getCountAllUser" parameterType="Hashmap"
 		resultType="String">
@@ -186,6 +187,41 @@
 		)
 	]]>
 	</insert>
+	<!-- 회원 작성글 조회 -->
+	<select id="getOwnContents" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" /> 
+		<![CDATA[
+		SELECT 
+		   ROW_NUMBER() OVER (ORDER BY BOARD_IDX DESC) RNUM,
+		   BOARD_IDX,BOARD_TITLE,
+		   BOARD_CONTENTS,
+		   BOARD_HIT_CNT,
+		   BOARD_DTM,
+		   USER_NICKNAME,
+		   BOARD_ID,
+		   (SELECT BO_NAME FROM TB_BOARDCONFIG WHERE BO_ID = a.BOARD_ID) BO_NAME 
+		FROM TB_BOARD a 
+		WHERE USER_ID = #{USER_ID} AND del_gb = 'N'
+		]]>
+
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			<choose>
+				<when test="SCH_TYPE.equals('TITLE_CONTENTS')">
+					AND (BOARD_CONTENTS LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%') OR BOARD_TITLE LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%'))
+				</when>
+
+				<otherwise>
+                    AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%') 
+				</otherwise>
+			</choose>
+		</if>
+
+
+		<include refid="common.pagingPost" />
+
+	</select>
+
 
 	<!-- 유저 닉네임,이메일 변경 -->
 	<update id="updateUserInfo" parameterType="User">
