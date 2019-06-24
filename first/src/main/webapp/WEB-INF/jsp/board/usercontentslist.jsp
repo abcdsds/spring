@@ -128,10 +128,6 @@
 											name="SCH_KEYWORD">
 									</div>
 									<input type="submit" class="btn btn-default" value="검색">
-									<a
-										href="<c:url value='/board/write.do?BOARD_ID=' />${BOARD_ID}"
-										class="pull-right"><span class="btn btn-default"
-										style="margin-right: 15px;">글쓰기</span></a>
 								</form>
 
 							</div>
