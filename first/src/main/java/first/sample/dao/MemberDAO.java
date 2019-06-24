@@ -52,6 +52,11 @@ public class MemberDAO extends AbstractDAO{
 	public Map<String, Object> getOwnContents(Map<String, Object> map) throws Exception {
 		return (Map<String, Object>) selectPagingList("member.getOwnContents", map);
 	}
+    
+    @SuppressWarnings("unchecked")
+   	public Map<String, Object> getOwnReplys(Map<String, Object> map) throws Exception {
+   		return (Map<String, Object>) selectPagingList("member.getOwnReplys", map);
+   	}
 
 
 

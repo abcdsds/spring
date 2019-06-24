@@ -26,8 +26,13 @@ public class MemberServiceImpl implements MemberService{
 	private MemberDAO memberDAO;
 
 	@Override
+	public Map<String,Object> getOwnReplys(Map<String,Object> map) throws Exception {	
+		return memberDAO.getOwnReplys(map);
+	}
+	
+	
+	@Override
 	public Map<String,Object> getOwnContents(Map<String,Object> map) throws Exception {
-		
 		return memberDAO.getOwnContents(map);
 	}
 	

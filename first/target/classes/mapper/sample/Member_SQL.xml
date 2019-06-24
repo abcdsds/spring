@@ -194,8 +194,8 @@
 		<![CDATA[
 		SELECT 
 		   ROW_NUMBER() OVER (ORDER BY BOARD_IDX DESC) RNUM,
-		   BOARD_IDX,BOARD_TITLE,
-		   BOARD_CONTENTS,
+		   BOARD_IDX,
+		   BOARD_TITLE,
 		   BOARD_HIT_CNT,
 		   BOARD_DTM,
 		   USER_NICKNAME,
@@ -208,16 +208,44 @@
 		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
 			<choose>
 				<when test="SCH_TYPE.equals('TITLE_CONTENTS')">
-					AND (BOARD_CONTENTS LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%') OR BOARD_TITLE LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%'))
+					AND (BOARD_CONTENTS LIKE CONCAT ('%'||
+					#{SCH_KEYWORD},'%') OR BOARD_TITLE LIKE CONCAT ('%'||
+					#{SCH_KEYWORD},'%'))
 				</when>
 
 				<otherwise>
-                    AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%') 
+					AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
 				</otherwise>
 			</choose>
 		</if>
 
 
+		<include refid="common.pagingPost" />
+
+	</select>
+
+	<select id="getOwnReplys" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" /> 
+		<![CDATA[
+		SELECT 
+		   ROW_NUMBER() OVER (ORDER BY IDX DESC) RNUM,
+		   IDX REPLY_IDX,
+		   PARENT_IDX BOARD_IDX,
+		   (SELECT BO_NAME FROM TB_BOARDCONFIG WHERE BO_ID = (SELECT BOARD_ID FROM TB_BOARD WHERE BOARD_IDX = a.PARENT_IDX)) BO_NAME,
+		   TITLE BOARD_TITLE,
+		   REPLY_DTM BOARD_DTM,
+		   USER_NICKNAME,
+		   (SELECT BOARD_ID FROM TB_BOARD WHERE BOARD_IDX = a.PARENT_IDX) BOARD_ID
+		 FROM TB_REPLY_BOARD a
+		 WHERE USER_ID = #{USER_ID} AND REPLY_DEL = 'N'
+		 AND (SELECT DEL_GB FROM TB_BOARD WHERE BOARD_IDX = a.PARENT_IDX) = 'N'
+		]]>
+
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+
+		</if>
 		<include refid="common.pagingPost" />
 
 	</select>

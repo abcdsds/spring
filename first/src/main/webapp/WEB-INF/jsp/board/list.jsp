@@ -56,7 +56,8 @@
 					<c:if test="${USER_LEVEL == '0'}">
 						<li><a href="<c:url value='/admin/main.do' />">관리페이지</a></li>
 					</c:if>
-					<li><a href="<c:url value='/board/mycontents.do' />">내 글</a></li>
+					<li><a href="<c:url value='/board/mycontents.do?act=contents' />">내 글</a></li>
+					<li><a href="<c:url value='/board/mycontents.do?act=replys' />">내 댓글</a></li>
 					<li><a href="<c:url value='/board/member.do' />">${NICKNAME} 님 환영합니다.</a></li>
 					<li><a href="<c:url value='/logout.do' />">Logout</a></li>
 				</ul>

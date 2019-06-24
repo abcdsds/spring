@@ -39,9 +39,9 @@ public class SampleController {
 	@Resource(name="memberService")
 	private MemberService memberService;
 
-	
+
 	@RequestMapping(value = "/board/mycontents.do")
-	public ModelAndView UserOwnContents(CommandMap commandMap) throws Exception {
+	public ModelAndView UserOwnContents(CommandMap commandMap,@RequestParam(value="act", required=false) String act) throws Exception {
 
 		ModelAndView mv = new ModelAndView();
 
@@ -53,11 +53,18 @@ public class SampleController {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		User memberVO = (User)principal;
 
-
 		commandMap.put("USER_ID", memberVO.getId());
-
-
-		Map<String,Object> contentslist = memberService.getOwnContents(commandMap.getMap());
+		Map<String,Object> contentslist = null;
+		if(act == null || act.equals("contents")) {
+			contentslist = memberService.getOwnContents(commandMap.getMap());
+		}else if(act.equals("replys")) {
+			contentslist = memberService.getOwnReplys(commandMap.getMap());
+		}else {
+			
+			mv.setViewName("redirect:/board/board.do");
+			return mv;
+		}
+		
 		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
 
 
@@ -67,13 +74,14 @@ public class SampleController {
 
 		mv.addObject("NICKNAME", memberVO.getNickname());
 		mv.addObject("USER_LEVEL", memberVO.getLevel());
+		mv.addObject("act",act);
 
 
-		mv.setViewName("board/list");
+		mv.setViewName("board/usercontentslist");
 		return mv;
 	}
-	
-	
+
+
 	@RequestMapping(value = "/board/memberupdate.do")
 	public ModelAndView MemberUpdate(CommandMap commandMap) throws Exception {
 
@@ -167,7 +175,7 @@ public class SampleController {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		User memberVO = (User)principal;
 
-		
+
 
 		if(BOARD_ID == null || BOARD_ID.length() < 3) {
 			BOARD_ID = "main";
@@ -187,19 +195,19 @@ public class SampleController {
 
 		commandMap.put("USER_ID", memberVO.getId());
 		Map<String,Object> map = sampleService.selectBoardDetail(commandMap.getMap(),request,response);
-		
+
 		Map<String,Object> check =  (Map<String, Object>) map.get("map");
-		
+
 		if(check.get("USER_ID").toString().equals(memberVO.getId()) == false) {
-			
+
 			mv.addObject("msg", "접근권한없음");
 			mv.addObject("url", "/first/board/board.do?BOARD_ID="+check.get("BOARD_ID").toString());
 			mv.setViewName("/redirect");
 			return mv;
-			
+
 		}
-		
-		
+
+
 		Map<String,Object> PageMap = sampleService.ReplyList(commandMap.getMap());
 		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
 

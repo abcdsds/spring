@@ -56,7 +56,10 @@
 					<c:if test="${USER_LEVEL == '0'}">
 						<li><a href="<c:url value='/admin/main.do' />">관리페이지</a></li>
 					</c:if>
-					<li><a href="<c:url value='/board/member.do' />">${NICKNAME} 님 환영합니다.</a></li>
+						<li><a href="<c:url value='/board/mycontents.do?act=contents' />">내 글</a></li>
+					<li><a href="<c:url value='/board/mycontents.do?act=replys' />">내 댓글</a></li>
+					<li><a href="<c:url value='/board/member.do' />">${NICKNAME}
+							님 환영합니다.</a></li>
 					<li><a href="<c:url value='/logout.do' />">Logout</a></li>
 				</ul>
 			</div>
@@ -98,24 +101,31 @@
 						</div>
 						<div class="panel-body">
 							<div class="row">
-								<form methon="get">
+								<form method="get">
 									<div class="col-md-2">
 										<select class="form-control" id="SCH_TYPE" name="SCH_TYPE">
-											<option value="BOARD_TITLE"
-												${SCH_TYPE eq "BOARD_TITLE" ? "selected" :""}>제목</option>
-											<option value="BOARD_CONTENTS"
-												${SCH_TYPE eq "BOARD_CONTENTS" ? "selected" :""}>내용</option>
-											<option value="TITLE_CONTENTS"
-												${SCH_TYPE eq "TITLE_CONTENTS" ? "selected" :""}>제목+내용</option>
-											<option value="USER_NICKNAME"
-												${SCH_TYPE eq "USER_NICKNAME" ? "selected" :""}>닉네임</option>
-
+											<c:choose>
+												<c:when test="${act eq 'contents'}">
+													<option value="BOARD_TITLE"
+														${SCH_TYPE eq "BOARD_TITLE" ? "selected" :""}>제목</option>
+													<option value="BOARD_CONTENTS"
+														${SCH_TYPE eq "BOARD_CONTENTS" ? "selected" :""}>내용</option>
+													<option value="TITLE_CONTENTS"
+														${SCH_TYPE eq "TITLE_CONTENTS" ? "selected" :""}>제목+내용</option>
+												</c:when>
+												<c:when test="${act eq 'replys'}">
+													<option value="TITLE"
+														${SCH_TYPE eq "BOARD_TITLE" ? "selected" :""}>제목</option>
+												</c:when>
+											</c:choose>
 										</select>
 									</div>
 
 									<div class="col-md-6">
-										<input class="form-control" type="text" value="${SCH_KEYWORD}"
-											id="SCH_KEYWORD" name="SCH_KEYWORD">
+										<input class="form-control" type="hidden" value="${act}"
+											id="act" name="act"> <input class="form-control"
+											type="text" value="${SCH_KEYWORD}" id="SCH_KEYWORD"
+											name="SCH_KEYWORD">
 									</div>
 									<input type="submit" class="btn btn-default" value="검색">
 									<a
@@ -131,7 +141,9 @@
 									<th class="col-md-1">게시판</th>
 									<th class="col-md-5">제목</th>
 									<th class="col-md-1">닉네임</th>
-									<th class="col-md-2">조회수</th>
+									<c:if test="${act eq 'contents'} ">
+										<th class="col-md-2">조회수</th>
+									</c:if>
 									<th class="col-md-3">날짜</th>
 
 								</tr>
@@ -145,9 +157,12 @@
 												<tr>
 													<td>${row.BO_NAME}</td>
 													<td><a
-														href="<c:url value='/board/read.do?IDX=' />${row.BOARD_IDX}&BOARD_ID=${BOARD_ID}">${row.BOARD_TITLE}</a></td>
+														href="<c:url value='/board/read.do?IDX=' />${row.BOARD_IDX}&BOARD_ID=${row.BOARD_ID}">${row.BOARD_TITLE}</a></td>
 													<td>${row.USER_NICKNAME}</td>
-													<td>${row.BOARD_HIT_CNT}</td>
+													<c:if test="${act eq 'contents'} ">
+														<td>${row.BOARD_HIT_CNT}</td>
+													</c:if>
+
 													<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm"
 															value="${row.BOARD_DTM}" /></td>
 
