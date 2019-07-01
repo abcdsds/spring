@@ -45,7 +45,7 @@ public class AdminController {
 
 	@RequestMapping(value = "/admin/postupdate.do")
 	public ModelAndView UpdatePost(CommandMap commandMap,HttpServletRequest request) throws Exception {
-		
+
 		ModelAndView mv = new ModelAndView();
 		adminService.UpdatePost(commandMap.getMap(),request);
 		mv.setViewName("redirect:/admin/board.do");
@@ -71,6 +71,30 @@ public class AdminController {
 		return mv;
 	}
 
+	@RequestMapping(value = "/admin/menu.do")
+	public ModelAndView MenuList(CommandMap commandMap) throws Exception {
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User memberVO = (User)principal;
+
+		ModelAndView mv = new ModelAndView();
+
+		if(commandMap.get("SCH_TYPE") != null && commandMap.get("SCH_KEYWORD") != null ) {
+			mv.addObject("SCH_TYPE", commandMap.get("SCH_TYPE"));
+			mv.addObject("SCH_KEYWORD", commandMap.get("SCH_KEYWORD"));
+		}
+
+		Map<String,Object> dashinfo = adminService.GetCountInfo();
+		Map<String,Object> list = adminService.getMenu(commandMap.getMap());
+
+		mv.addObject("paginationInfo", (PaginationInfo)list.get("paginationInfo"));
+		mv.addObject("list", list.get("result"));
+		mv.addObject("dashinfo", dashinfo.get("map"));
+		mv.addObject("USER_NICKNAME", memberVO.getNickname());
+
+		mv.setViewName("admin/menu");
+		return mv;
+	}
 
 	@RequestMapping(value = "/admin/main.do")
 	public ModelAndView login(HttpServletRequest request) throws Exception {
@@ -269,7 +293,7 @@ public class AdminController {
 		ModelAndView mv = new ModelAndView();
 		Map<String,Object> resultmap = adminService.getUserInfo(commandMap.getMap());
 		Map<String,Object> dashinfo = adminService.GetCountInfo();
-		
+
 		mv.addObject("dashinfo", dashinfo.get("map"));
 		mv.addObject("map", resultmap);
 		mv.addObject("USER_NICKNAME", memberVO.getNickname());
@@ -286,7 +310,7 @@ public class AdminController {
 		System.out.println(commandMap.get("user_id"));
 		adminService.UpdateUser(commandMap.getMap());
 		Map<String,Object> dashinfo = adminService.GetCountInfo();
-		
+
 		mv.setViewName("redirect:/admin/usereditform.do?id="+commandMap.get("user_id"));
 		return mv;
 
@@ -301,7 +325,7 @@ public class AdminController {
 		ModelAndView mv = new ModelAndView();
 		Map<String,Object> resultmap = adminService.UpdateBoardForm(commandMap.getMap());
 		Map<String,Object> dashinfo = adminService.GetCountInfo();
-		
+
 		mv.addObject("map", resultmap);		
 		mv.addObject("dashinfo", dashinfo.get("map"));
 		mv.addObject("USER_NICKNAME", memberVO.getNickname());

@@ -72,6 +72,12 @@ public class AdminServiceImpl implements AdminService{
 	}
 
 	@Override
+	public Map<String, Object> getMenu(Map<String, Object> map) throws Exception {
+		// TODO Auto-generated method stub
+		return adminDAO.MenuList(map);
+	}
+	
+	@Override
 	public Map<String, Object> getReply(Map<String, Object> map) throws Exception {
 		// TODO Auto-generated method stub
 		return adminDAO.ReplyList(map);

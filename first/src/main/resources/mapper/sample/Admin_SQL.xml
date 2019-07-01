@@ -25,7 +25,7 @@
 		where MEM_NUM = #{USER_NO}
 
 	</delete>
-	<!--  댓글 수정 -->
+	<!-- 댓글 수정 -->
 	<update id="updateReply" parameterType="hashmap">
     <![CDATA[
         UPDATE TB_REPLY_BOARD
@@ -38,28 +38,30 @@
         
     ]]>
 	</update>
-	
+
 	<!-- 게시판 삭제 -->
 	<delete id="DeleteBoard" parameterType="Hashmap">
-		delete from tb_boardconfig
+		delete from
+		tb_boardconfig
 		where BO_NUM = #{BOARD_NO}
 
 	</delete>
-	
+
 	<!-- 게시글 삭제 -->
 	<delete id="DeleteContent" parameterType="Hashmap">
 		delete from tb_board
 		where BOARD_IDX = #{BOARD_NO}
 
 	</delete>
-	
+
 	<!-- 리플 삭제 -->
 	<delete id="DeleteReply" parameterType="Hashmap">
-		delete from TB_REPLY_BOARD
+		delete from
+		TB_REPLY_BOARD
 		where IDX = #{REPLY_NO}
 
 	</delete>
-	
+
 	<!-- 유저 닉네임,이메일,레벨 변경 -->
 	<update id="updateUserInfo" parameterType="Hashmap">
 		UPDATE tb_member SET
@@ -69,20 +71,35 @@
 		WHERE mem_id = #{user_id}
 	</update>
 
-   <!-- 게시글 변경 -->
+	<!-- 게시글 변경 -->
 	<update id="updatePost" parameterType="Hashmap">
-		UPDATE tb_board bb 
+		UPDATE tb_board bb
 		SET
 		BOARD_ID = #{BOARD_ID},
 		BOARD_TITLE = #{TITLE},
-		BOARD_CONTENTS = #{CONTENTS}
+		BOARD_CONTENTS =
+		#{CONTENTS}
 		WHERE BOARD_IDX = #{IDX}
 		AND
-		     ( bb.USER_ID = #{USER_ID}
-		 OR
-		   (select MEM_LEVEL from tb_member where MEM_ID = #{USER_ID})  = '0' )
+		( bb.USER_ID = #{USER_ID}
+		OR
+		(select MEM_LEVEL from tb_member where MEM_ID = #{USER_ID}) = '0' )
 	</update>
 
+
+
+	<select id="getMenuInfo" parameterType="Hashmap"
+		resultType="Hashmap">
+		SELECT
+		menu_num,
+		menu_parent,
+		menu_updown,
+		menu_leftright,
+		bo_id,
+		menu_name
+		FROM tb_menu
+		WHERE menu_num = #{menu_num}
+	</select>
 
 	<select id="getUserInfo" parameterType="Hashmap"
 		resultType="Hashmap">
@@ -213,6 +230,28 @@
 	      (SELECT MEM_NAME FROM TB_MEMBER WHERE B.LOG_ID = MEM_ID) MEM_NAME,
 	      (SELECT MEM_LEVEL FROM TB_MEMBER WHERE B.LOG_ID = MEM_ID) MEM_LEVEL
 	      FROM TB_LOG_MEMBER B
+		]]>
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+		</if>
+		<include refid="common.pagingPost" />
+	</select>
+
+	<!-- 메뉴리스트 조회 -->
+	<select id="getAllMenu" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" />
+		<![CDATA[
+		  Select ROW_NUMBER() OVER (ORDER BY MENU_NUM DESC) RNUM,
+	      MENU_NUM,
+	      MENU_PARENT,
+	      MENU_DEPTH,
+	      MENU_KIND,
+	      MENU_LEVEL,
+	      BO_ID,
+	      MENU_NAME,
+	      (SELECT MENU_NAME FROM TB_MENU WHERE MENU_NUM = b.MENU_PARENT) PARENT_NAME
+	      FROM TB_MENU b
 		]]>
 		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
 			WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')

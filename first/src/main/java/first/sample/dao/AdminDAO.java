@@ -29,6 +29,11 @@ public class AdminDAO extends AbstractDAO{
 	}
 	
 	@SuppressWarnings("unchecked")
+	public Map<String, Object> MenuList(Map<String, Object> map) throws Exception{
+		return (Map<String, Object>)selectPagingList("admin.getAllMenu", map);
+	}
+	
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> LogList(Map<String, Object> map) throws Exception{
 		return (Map<String, Object>)selectPagingList("admin.getAllLog", map);
 	}

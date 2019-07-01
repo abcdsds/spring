@@ -30,6 +30,7 @@ public interface AdminService {
 	void deleteReply(Map<String, Object> map) throws Exception;
 	void UpdatePost(Map<String, Object> map,HttpServletRequest request) throws Exception;
 	void UpdateReply(Map<String, Object> map) throws Exception;
+	Map<String, Object> getMenu(Map<String, Object> map) throws Exception;
 
 
 }
