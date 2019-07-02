@@ -6,13 +6,14 @@
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin Area | Pages</title>
+<title>Admin Area | Edit Page</title>
 <!-- Bootstrap core CSS -->
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 <link href="../css/style.css" rel="stylesheet">
@@ -57,7 +58,7 @@
 				<div class="col-md-10">
 					<h1>
 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-						게시판
+						게시판 수정
 					</h1>
 				</div>
 				<div class="col-md-2">
@@ -83,7 +84,8 @@
 		<div class="container">
 			<ol class="breadcrumb">
 				<li><a href="index.html">Dashboard</a></li>
-				<li class="active">게시판</li>
+				<li><a href="pages.html">게시판</a></li>
+				<li class="active">Edit Board</li>
 			</ol>
 		</div>
 	</section>
@@ -95,97 +97,96 @@
 				<div class="col-md-9">
 					<!-- Website Overview -->
 					<div class="panel panel-default">
-						<div class="panel-heading main-color-bg">
-							<h3 class="panel-title">게시판</h3>
-						</div>
-						<div class="panel-body">
-							<div class="row">
-								<form methon="get">
-									<div class="col-md-2">
-										<select class="form-control" id="SCH_TYPE" name="SCH_TYPE">
-											<option value="BO_NAME"
-												${SCH_TYPE eq "BO_NAME" ? "selected" :""}>게시판이름</option>
-											<option value="BO_ID" ${SCH_TYPE eq "BO_ID" ? "selected" :""}>게시판아이디</option>
-											<option value="BO_LEVEL"
-												${SCH_TYPE eq "BO_LEVEL" ? "selected" :""}>등급</option>
+						<c:if test="${MODE eq 'main'}">
+							<div class="panel-heading main-color-bg">
+								<h3 class="panel-title">상위 메뉴 수정</h3>
+							</div>
+							<div class="panel-body">
+								<form id="board" action="<c:url value='/admin/insertmenu.do' />">
+									<div class="form-group">
+										<label>메뉴 이름</label> <input type="text" class="form-control"
+											placeholder="메뉴 이름" id="menu_name" name="menu_name"
+											>
+									</div>
+
+									<div class="form-group">
+										<label>메뉴 순서</label> <input type="text" class="form-control"
+											placeholder="메뉴 순서" id="menu_depth" name="menu_depth"
+											value="">
+									</div>
+
+									<div class="form-group">
+										<label>메뉴 레벨</label> <select class="form-control"
+											id="menu_level" name="menu_level">
+											<option value="0">운영자</option>
+											<option value="1">특별회원</option>
+											<option value="2">일반회원</option>
 										</select>
 									</div>
 
-									<div class="col-md-6">
-										<input class="form-control" type="text" value="${SCH_KEYWORD}"
-											id="SCH_KEYWORD" name="SCH_KEYWORD">
-									</div>
-									<input type="submit" class="btn btn-default" value="검색">
-									<a
-										href="<c:url value='/admin/addmenu.do?mod=main' />"
-										class="pull-right"><span class="btn btn-default"
-										style="margin-right: 15px;">메인메뉴 추가</span></a> <a
-										href="<c:url value='/admin/addmenu.do?mod=sub' />"
-										class="pull-right"><span class="btn btn-default"
-										style="margin-right: 15px;">서브메뉴 추가</span></a>
+									<input type="submit"
+										class="btn btn-default" value="메뉴 추가">
 								</form>
 							</div>
-							<br>
-							<table class="table table-striped table-hover">
-								<tr>
-									<th>메뉴이름</th>
-									<th>메뉴종류</th>
-									<th>메뉴등급</th>
-									<th>메뉴순서</th>
-									<th></th>
-								</tr>
-								<c:choose>
-									<c:when test="${fn:length(list) > 0}">
-										<c:forEach var="row" items="${list}" varStatus="status">
-											<c:if test="${row.TOTAL_COUNT > 0}">
-												<tr>
-													<td>${row.MENU_NAME}</td>
-													<c:choose>
-														<c:when test="${row.MENU_KIND eq '0'}">
-															<td>메인메뉴</td>
-														</c:when>
-														<c:when test="${row.MENU_KIND eq '1'}">
-															<td>${row.PARENT_NAME}의 하위메뉴</td>
-														</c:when>
-													</c:choose>
-													<c:choose>
-														<c:when test="${row.MENU_LEVEL eq '0'}">
-															<td>운영자</td>
-														</c:when>
-														<c:when test="${row.MENU_LEVEL eq '1'}">
-															<td>특별회원</td>
-														</c:when>
-														<c:when test="${row.MENU_LEVEL eq '2'}">
-															<td>일반회원</td>
-														</c:when>
-													</c:choose>
-													<td>${row.MENU_DEPTH}번</td>
+						</c:if>
 
-
-													<td><a class="btn btn-default"
-														href="<c:url value='/admin/menueditform.do?MENU_NUM=' />${row.MENU_NUM}&mod=${row.MENU_KIND eq '0' ? 'main' :'sub'}">Edit</a>
-														<button class="btn btn-danger"
-															data-href="<c:url value='/admin/deleteMenu.do?MENU_NUM=' />${row.MENU_NUM}"
-															data-toggle="modal" data-target="#confirm-menudelete">Delete</button></td>
-												</tr>
-											</c:if>
-										</c:forEach>
-
-									</c:when>
-								</c:choose>
-							</table>
-							<div class="row">
-								<div class="col-md-12">
-									<ul class="pagination">
-										<c:if test="${not empty paginationInfo}">
-											<ui:pagination paginationInfo="${paginationInfo}"
-												type="customRenderer" />
-										</c:if>
-
-									</ul>
-								</div>
+						<c:if test="${MODE eq 'sub'}">
+							<div class="panel-heading main-color-bg">
+								<h3 class="panel-title">하위 메뉴 수정</h3>
 							</div>
-						</div>
+							<div class="panel-body">
+								<form id="board" action="<c:url value='/admin/insertmenu.do' />">
+									<div class="form-group">
+										<label>상위 메뉴 선택</label> <select class="form-control"
+											id="menu_parent" name="menu_parent">
+											
+											<c:choose>
+												<c:when test="${fn:length(menulist) > 0}">
+												<c:forEach var="menu" items="${menulist}" varStatus="status">
+															<option value="${menu.MENU_NUM}">${menu.MENU_NAME}</option>
+													</c:forEach>
+
+												</c:when>
+											</c:choose>
+										</select>
+									</div>
+
+									<div class="form-group">
+										<label>게시판 선택</label> <select class="form-control" id="bo_id"
+											name="bo_id">
+											
+											<c:choose>
+												<c:when test="${fn:length(boardlist) > 0}">
+													<c:forEach var="row" items="${boardlist}" varStatus="status">
+															<option value="${row.BO_ID}">${row.BO_NAME}</option>
+													</c:forEach>
+
+												</c:when>
+											</c:choose>
+										</select>
+									</div>
+
+
+									<div class="form-group">
+										<label>메뉴 순서</label> <input type="text" class="form-control"
+											placeholder="순서" id="menu_depth" name="menu_depth"
+											value="">
+									</div>
+
+									<div class="form-group">
+										<label>메뉴 레벨</label> <select class="form-control"
+											id="menu_level" name="menu_level">
+											<option value="0">운영자</option>
+											<option value="1">특별회원</option>
+											<option value="2">일반회원</option>
+										</select>
+									</div>
+
+									<input type="submit"
+										class="btn btn-default" value="메뉴 추가">
+								</form>
+							</div>
+						</c:if>
 					</div>
 
 				</div>
@@ -212,15 +213,7 @@
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="../js/bootstrap.min.js"></script>
-
 	<script type="text/javascript">
-	
-	    $('#confirm-menudelete').on('show.bs.modal', function(e) {
-         $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
-         
-         //$('.debug-url').html('Delete URL: <strong>' + $(this).find('.btn-ok').attr('href') + '</strong>');
-        });
-	 
 		var gfv_count = '${fn:length(list)+1}';
 		$(document).ready(function() {
 			

@@ -88,6 +88,12 @@ public class AdminServiceImpl implements AdminService{
 		// TODO Auto-generated method stub
 		adminDAO.InsertBoard(map);
 	}
+	
+	@Override
+	public void InsertMenu(Map<String, Object> map) throws Exception {
+		// TODO Auto-generated method stub
+		adminDAO.InsertMenu(map);
+	}
 
 	@Override
 	public void InsertUser(Map<String, Object> map) throws Exception {
@@ -132,6 +138,12 @@ public class AdminServiceImpl implements AdminService{
 	}
 	
 	@Override
+	public void UpdateMenu(Map<String, Object> map) throws Exception {
+		// TODO Auto-generated method stub
+		adminDAO.UpdateMenu(map);
+	}
+	
+	@Override
 	public void UpdateReply(Map<String, Object> map) throws Exception {
 		// TODO Auto-generated method stub
 		adminDAO.UpdateReply(map);
@@ -162,6 +174,22 @@ public class AdminServiceImpl implements AdminService{
 		// TODO Auto-generated method stub
 		return adminDAO.getBoardInfo(map);
 	}
+	
+	@Override
+	public Map<String, Object> UpdateMenuForm(Map<String, Object> map) throws Exception {
+		// TODO Auto-generated method stub
+		return adminDAO.getMenuInfo(map);
+	}
+	
+	@Override
+	public Map<String, Object> GetMainMenuList(Map<String, Object> map) throws Exception {
+		// TODO Auto-generated method stub
+		Map<String, Object> resultMap = new HashMap<String,Object>();
+		List<Map<String,Object>> tempMap = adminDAO.getMainMenuList(map);
+		resultMap.put("menulist", tempMap);
+		return resultMap;
+	}
+	
 
 	@Override
 	public void UpdateBoard(Map<String, Object> map) throws Exception {
@@ -184,6 +212,11 @@ public class AdminServiceImpl implements AdminService{
 	@Override
 	public void deleteBoard(Map<String, Object> map) throws Exception {
 		adminDAO.DeleteBoard(map);
+	}
+	
+	@Override
+	public void deleteMenu(Map<String, Object> map) throws Exception {
+		adminDAO.DeleteMenu(map);
 	}
 
 	@Override

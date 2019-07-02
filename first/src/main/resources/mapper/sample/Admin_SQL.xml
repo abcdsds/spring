@@ -25,6 +25,41 @@
 		where MEM_NUM = #{USER_NO}
 
 	</delete>
+
+	<!-- 댓글 수정 -->
+	<update id="updateMenu" parameterType="hashmap">
+    <![CDATA[
+        UPDATE TB_MENU
+          
+        SET
+     ]]>
+		<choose>
+			<when test="menu_parent != null and bo_id != null">
+			<![CDATA[
+				MENU_PARENT = #{menu_parent},
+				BO_ID = #{bo_id},
+				MENU_NAME = (select bo_name from tb_boardconfig where bo_id = #{bo_id}),
+				MENU_GROUP = #{menu_parent},
+            ]]>
+			</when>
+			<otherwise>
+			<![CDATA[
+			
+			    MENU_NAME = #{menu_name},
+			
+			]]>
+			</otherwise>
+		</choose>
+		<![CDATA[
+		MENU_LEVEL = #{menu_level},
+		MENU_DEPTH = #{menu_depth}
+		WHERE
+		MENU_NUM = #{menu_num}
+
+        ]]>
+
+	</update>
+
 	<!-- 댓글 수정 -->
 	<update id="updateReply" parameterType="hashmap">
     <![CDATA[
@@ -62,6 +97,19 @@
 
 	</delete>
 
+	<!-- 게시글 삭제 -->
+	<delete id="DeleteMenu" parameterType="Hashmap">
+		DELETE
+		FROM
+		TB_MENU
+		WHERE
+		MENU_NUM = #{MENU_NUM}
+		OR
+		MENU_PARENT = #{MENU_NUM}
+
+	</delete>
+
+
 	<!-- 유저 닉네임,이메일,레벨 변경 -->
 	<update id="updateUserInfo" parameterType="Hashmap">
 		UPDATE tb_member SET
@@ -87,18 +135,27 @@
 	</update>
 
 
+	<select id="getMainMenuList" parameterType="Hashmap"
+		resultType="Hashmap">
+		select
+		MENU_NUM,MENU_PARENT,MENU_DEPTH,MENU_GROUP,MENU_KIND,MENU_LEVEL,MENU_NAME from
+		tb_menu where menu_kind = 0
+	</select>
+
 
 	<select id="getMenuInfo" parameterType="Hashmap"
 		resultType="Hashmap">
 		SELECT
 		menu_num,
 		menu_parent,
-		menu_updown,
-		menu_leftright,
+		menu_depth,
+		menu_kind,
+		menu_level,
+		menu_group,
 		bo_id,
 		menu_name
 		FROM tb_menu
-		WHERE menu_num = #{menu_num}
+		WHERE menu_num = #{MENU_NUM}
 	</select>
 
 	<select id="getUserInfo" parameterType="Hashmap"
@@ -248,14 +305,19 @@
 	      MENU_DEPTH,
 	      MENU_KIND,
 	      MENU_LEVEL,
+	      MENU_GROUP,
 	      BO_ID,
 	      MENU_NAME,
 	      (SELECT MENU_NAME FROM TB_MENU WHERE MENU_NUM = b.MENU_PARENT) PARENT_NAME
 	      FROM TB_MENU b
+	      
 		]]>
 		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
 			WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
 		</if>
+		<![CDATA[
+		 order by menu_group desc, menu_parent desc , menu_depth asc
+		]]>
 		<include refid="common.pagingPost" />
 	</select>
 
@@ -382,6 +444,64 @@
 		    
 		)
 	]]>
+	</insert>
+
+	<!-- 메뉴 등록 -->
+	<insert id="InsertMenu" parameterType="Hashmap"
+		useGeneratedKeys="true">
+		<selectKey keyProperty="idx" resultType="int" order="BEFORE">
+			SELECT
+			SEQ_TB_MENU_NUM.NEXTVAL FROM DUAL
+		</selectKey>
+	<![CDATA[
+		
+		INSERT INTO TB_MENU
+		(
+			menu_num,
+			menu_parent,
+			menu_depth,
+			menu_kind,
+			menu_level,
+			menu_group,
+			bo_id,
+		    menu_name
+
+		)
+   ]]>
+		<choose>
+			<when test="menu_parent != null">
+    <![CDATA[
+		VALUES
+		(
+			#{idx}, 
+		    #{menu_parent},  
+		    #{menu_depth},
+		    '1',
+		    #{menu_level},
+		    #{menu_parent},
+		    #{bo_id},
+		    (select bo_name from tb_boardconfig where bo_id = #{bo_id})
+		    
+		)
+	]]>
+			</when>
+			<otherwise>
+   <![CDATA[
+		VALUES
+		(
+			#{idx}, 
+		    null,  
+		    #{menu_depth},
+		    '0',
+		    #{menu_level},
+		    #{idx},
+		    null,
+		    #{menu_name}
+		    
+		)
+	]]>
+			</otherwise>
+		</choose>
 	</insert>
 
 	<!-- 회원등록 -->

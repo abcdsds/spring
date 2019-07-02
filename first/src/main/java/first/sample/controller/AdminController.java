@@ -1,5 +1,6 @@
 package first.sample.controller;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -270,6 +271,52 @@ public class AdminController {
 	}
 
 	@ResponseBody
+	@RequestMapping(value = "/admin/insertmenu.do",produces = "application/text; charset=utf8")
+	public ModelAndView InsertMenu(CommandMap commandMap) throws Exception {
+
+		ModelAndView mv = new ModelAndView();
+
+		adminService.InsertMenu(commandMap.getMap());
+		mv.setViewName("redirect:/admin/menu.do");
+		return mv;
+
+
+	}
+
+
+
+	@RequestMapping(value = "/admin/addmenu.do")
+	public ModelAndView InsertMenuForm(CommandMap commandMap) throws Exception {
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User memberVO = (User)principal;
+
+
+		ModelAndView mv = new ModelAndView();
+
+		Map<String,Object> dashinfo = adminService.GetCountInfo();
+
+		if(commandMap.get("mod").equals("sub")) {
+			Map<String,Object> boardlist = sampleService.selectMenuList(commandMap.getMap());
+			Map<String,Object> menulist = adminService.GetMainMenuList(commandMap.getMap());
+
+			//ArrayList menulist2 = (ArrayList) boardlist.get("list");
+			//menulist2.forEach(item->System.out.println(item));
+
+			mv.addObject("menulist", menulist.get("menulist"));		
+			mv.addObject("boardlist", boardlist.get("menulist"));
+		}
+
+
+		mv.addObject("dashinfo", dashinfo.get("map"));
+		mv.addObject("MODE", commandMap.get("mod"));
+		mv.addObject("USER_NICKNAME", memberVO.getNickname());
+		mv.setViewName("admin/writemenu");
+		return mv;
+
+	}
+
+	@ResponseBody
 	@RequestMapping(value = "/admin/insertuser.do",produces = "application/text; charset=utf8")
 	public String InsertUser(CommandMap commandMap) throws Exception {
 
@@ -316,6 +363,52 @@ public class AdminController {
 
 	}
 
+	@RequestMapping(value = "/admin/menuedit.do")
+	public ModelAndView UpdateMenu(CommandMap commandMap) throws Exception {
+
+		ModelAndView mv = new ModelAndView();
+		adminService.UpdateMenu(commandMap.getMap());
+		mv.setViewName("redirect:/admin/menu.do");
+		return mv;
+
+	}
+
+	@RequestMapping(value = "/admin/menueditform.do")
+	public ModelAndView UpdateMenuform(CommandMap commandMap) throws Exception {
+
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User memberVO = (User)principal;
+
+
+		ModelAndView mv = new ModelAndView();
+
+		if(commandMap.get("mod") == null) {
+
+			mv.setViewName("redirect:/admin/menu.do");
+			return mv;
+		}
+
+		Map<String,Object> resultmap = adminService.UpdateMenuForm(commandMap.getMap());
+		Map<String,Object> dashinfo = adminService.GetCountInfo();
+
+		if(commandMap.get("mod").equals("sub")) {
+			Map<String,Object> boardlist = sampleService.selectMenuList(commandMap.getMap());
+			Map<String,Object> menulist = adminService.GetMainMenuList(commandMap.getMap());
+
+			//ArrayList menulist2 = (ArrayList) boardlist.get("list");
+			//menulist2.forEach(item->System.out.println(item));
+
+			mv.addObject("menulist", menulist.get("menulist"));		
+			mv.addObject("boardlist", boardlist.get("menulist"));
+		}
+		mv.addObject("map", resultmap);		
+		mv.addObject("dashinfo", dashinfo.get("map"));
+		mv.addObject("USER_NICKNAME", memberVO.getNickname());
+		mv.setViewName("admin/menuedit");
+		return mv;
+
+	}
+
 	@RequestMapping(value = "/admin/boardeditform.do")
 	public ModelAndView UpdateBoardform(CommandMap commandMap) throws Exception {
 
@@ -344,6 +437,7 @@ public class AdminController {
 		return mv;
 
 	}
+
 
 	@RequestMapping(value = "/admin/deleteUserID.do")
 	public ModelAndView deleteUserID(CommandMap commandMap) throws Exception {
@@ -390,6 +484,15 @@ public class AdminController {
 		mv.setViewName("redirect:/admin/reply.do");
 		return mv;
 
+	}
+
+	@RequestMapping(value = "/admin/deleteMenu.do")
+	public ModelAndView deleteMenu(CommandMap commandMap) throws Exception {
+
+		ModelAndView mv = new ModelAndView();
+		adminService.deleteMenu(commandMap.getMap());
+		mv.setViewName("redirect:/admin/menu.do");
+		return mv;
 	}
 }
 
