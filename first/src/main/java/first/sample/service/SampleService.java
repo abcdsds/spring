@@ -36,5 +36,6 @@ public interface SampleService {
 	Map<String, Object> getBoardRole(Map<String, Object> map) throws Exception;
 	Map<String, Object> selectMenuList(Map<String, Object> map) throws Exception;
 	Map<String,Object> getBoardName(String id) throws Exception;
+    Map<String, Object> selectNewMenuList(Map<String, Object> map) throws Exception;
 
 }

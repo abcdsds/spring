@@ -68,7 +68,10 @@ public class SampleDAO extends AbstractDAO{
 		return (List<Map<String,Object>>)selectList("sample.selectMenuList", map);
 	}
 
-
+	@SuppressWarnings("unchecked")
+	public List<Map<String,Object>> selectNewMenuList(Map<String, Object> map) throws Exception{
+		return (List<Map<String,Object>>)selectList("sample.getAllMenu", map);
+	}
 
     public void insertBoard(Map<String, Object> map) throws Exception{ 
     	insert("sample.insertBoard", map); 

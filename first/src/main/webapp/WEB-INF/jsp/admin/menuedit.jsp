@@ -36,6 +36,7 @@
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="<c:url value='/admin/main.do' />">Dashboard</a></li>
+					<li><a href="<c:url value='/admin/menu.do' />">메뉴</a></li>
 					<li class="active"><a href="<c:url value='/admin/board.do' />">게시판</a></li>
 					<li><a href="<c:url value='/admin/boardcontents.do' />">게시글</a></li>
 					<li><a href="<c:url value='/admin/user.do' />">회원</a></li>
@@ -84,8 +85,8 @@
 		<div class="container">
 			<ol class="breadcrumb">
 				<li><a href="index.html">Dashboard</a></li>
-				<li><a href="pages.html">게시판</a></li>
-				<li class="active">Edit Board</li>
+				<li><a href="pages.html">메뉴</a></li>
+				<li class="active">Edit Menu</li>
 			</ol>
 		</div>
 	</section>

@@ -35,7 +35,8 @@
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="<c:url value='/admin/main.do' />">Dashboard</a></li>
-					<li class="active"><a href="<c:url value='/admin/board.do' />">게시판</a></li>
+					<li class="active"><a href="<c:url value='/admin/menu.do' />">메뉴</a></li>
+					<li><a href="<c:url value='/admin/board.do' />">게시판</a></li>
 					<li><a href="<c:url value='/admin/boardcontents.do' />">게시글</a></li>
 					<li><a href="<c:url value='/admin/user.do' />">회원</a></li>
 					<li><a href="<c:url value='/admin/log.do' />">접속기록</a></li>
@@ -83,7 +84,7 @@
 		<div class="container">
 			<ol class="breadcrumb">
 				<li><a href="index.html">Dashboard</a></li>
-				<li class="active">게시판</li>
+				<li class="active">메뉴</li>
 			</ol>
 		</div>
 	</section>
@@ -103,11 +104,11 @@
 								<form methon="get">
 									<div class="col-md-2">
 										<select class="form-control" id="SCH_TYPE" name="SCH_TYPE">
-											<option value="BO_NAME"
-												${SCH_TYPE eq "BO_NAME" ? "selected" :""}>게시판이름</option>
-											<option value="BO_ID" ${SCH_TYPE eq "BO_ID" ? "selected" :""}>게시판아이디</option>
-											<option value="BO_LEVEL"
-												${SCH_TYPE eq "BO_LEVEL" ? "selected" :""}>등급</option>
+											<option value="MENU_NAME"
+												${SCH_TYPE eq "BO_NAME" ? "selected" :""}>메뉴이름</option>
+											<option value="BO_ID" ${SCH_TYPE eq "BO_ID" ? "selected" :""}>메뉴순서</option>
+											<option value="MENU_LEVEL"
+												${SCH_TYPE eq "BO_LEVEL" ? "selected" :""}>메뉴등급</option>
 										</select>
 									</div>
 

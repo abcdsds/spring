@@ -37,28 +37,43 @@
 			</div>
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="navbar-item dropdown"><a
-						class="nav-link dropdown-toggle" data-toggle="dropdown">게시판 메뉴</a>
-						<ul class="dropdown-menu">
-							<c:choose>
-								<c:when test="${fn:length(menulist) > 0}">
-									<c:forEach var="row" items="${menulist}" varStatus="status">
-										<li><a
-											href="<c:url value='/board/board.do?BOARD_ID=' />${row.BO_ID}">${row.BO_NAME}</a></li>
-									</c:forEach>
+					<c:choose>
+						<c:when test="${fn:length(menulist) > 0}">
+							<c:forEach var="row" items="${menulist}" varStatus="status">
+								<c:choose>
+									<c:when test="${row.MENU_KIND eq '0'}">
 
-								</c:when>
-							</c:choose>
-						</ul></li>
+										<li class="navbar-item dropdown"><a
+											class="nav-link dropdown-toggle" data-toggle="dropdown">${row.MENU_NAME}</a>
+											<ul class="dropdown-menu">
+												<c:forEach var="col" items="${menulist}" varStatus="status">
+													<c:if
+														test="${col.MENU_KIND.equals('1') and row.MENU_GROUP eq col.MENU_GROUP}">
+														<li><a
+															href="<c:url value='/board/board.do?BOARD_ID=' />${col.BO_ID}">${col.MENU_NAME}</a>
+														</li>
+													</c:if>
+												</c:forEach>
+											</ul></li>
+									</c:when>
 
+								</c:choose>
+
+
+							</c:forEach>
+						</c:when>
+					</c:choose>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<c:if test="${USER_LEVEL == '0'}">
 						<li><a href="<c:url value='/admin/main.do' />">관리페이지</a></li>
 					</c:if>
-					<li><a href="<c:url value='/board/mycontents.do?act=contents' />">내 글</a></li>
-					<li><a href="<c:url value='/board/mycontents.do?act=replys' />">내 댓글</a></li>
-					<li><a href="<c:url value='/board/member.do' />">${NICKNAME} 님 환영합니다.</a></li>
+					<li><a
+						href="<c:url value='/board/mycontents.do?act=contents' />">내 글</a></li>
+					<li><a
+						href="<c:url value='/board/mycontents.do?act=replys' />">내 댓글</a></li>
+					<li><a href="<c:url value='/board/member.do' />">${NICKNAME}
+							님</a></li>
 					<li><a href="<c:url value='/logout.do' />">Logout</a></li>
 				</ul>
 			</div>

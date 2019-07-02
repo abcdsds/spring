@@ -4,6 +4,24 @@
 <mapper namespace="sample">
 
 
+	<!-- 메뉴리스트 조회 -->
+	<select id="getAllMenu" parameterType="Hashmap"
+		resultType="Hashmap">
+		<![CDATA[
+		  Select ROW_NUMBER() OVER (ORDER BY MENU_NUM DESC) RNUM,
+	      MENU_NUM,
+	      MENU_PARENT,
+	      MENU_DEPTH,
+	      MENU_KIND,
+	      MENU_LEVEL,
+	      MENU_GROUP,
+	      BO_ID,
+	      MENU_NAME
+	      FROM TB_MENU b
+		  order by menu_group desc, menu_parent desc , menu_depth asc
+		]]>
+	</select>
+
 
 	<select id="selectBoardList" parameterType="hashmap"
 		resultType="hashmap">
@@ -42,11 +60,13 @@
 		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
 			<choose>
 				<when test="SCH_TYPE.equals('TITLE_CONTENTS')">
-					AND (BOARD_CONTENTS LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%') OR BOARD_TITLE LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%'))
+					AND (BOARD_CONTENTS LIKE CONCAT ('%'||
+					#{SCH_KEYWORD},'%') OR BOARD_TITLE LIKE CONCAT ('%'||
+					#{SCH_KEYWORD},'%'))
 				</when>
 
 				<otherwise>
-                    AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%') 
+					AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
 				</otherwise>
 			</choose>
 		</if>
@@ -195,15 +215,16 @@
 
 
 	<update id="updateContents" parameterType="Hashmap">
-		UPDATE tb_board bb 
+		UPDATE tb_board bb
 		SET
 		BOARD_TITLE = #{TITLE},
 		BOARD_CONTENTS = #{CONTENTS}
-		WHERE BOARD_IDX = #{IDX}
+		WHERE BOARD_IDX =
+		#{IDX}
 		AND
-		     ( bb.USER_ID = #{USER_ID}
-		 OR
-		   (select MEM_LEVEL from tb_member where MEM_ID = #{USER_ID})  = '0' )
+		( bb.USER_ID = #{USER_ID}
+		OR
+		(select MEM_LEVEL from tb_member where MEM_ID = #{USER_ID}) = '0' )
 	</update>
 
 	<update id="deleteBoard" parameterType="hashmap">

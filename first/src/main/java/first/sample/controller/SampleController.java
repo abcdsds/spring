@@ -65,7 +65,7 @@ public class SampleController {
 			return mv;
 		}
 		
-		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
+		Map<String,Object> menulist = sampleService.selectNewMenuList(commandMap.getMap());
 
 
 		mv.addObject("paginationInfo", (PaginationInfo)contentslist.get("paginationInfo"));
@@ -112,7 +112,7 @@ public class SampleController {
 		ModelAndView mv = new ModelAndView();
 
 		User MemberVO = memberService.getUserInfo(id);
-		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
+		Map<String,Object> menulist = sampleService.selectNewMenuList(commandMap.getMap());
 
 		mv.addObject("member",MemberVO);
 		mv.addObject("menulist",menulist.get("menulist"));
@@ -135,7 +135,9 @@ public class SampleController {
 		ModelAndView mv = new ModelAndView();
 
 		User MemberVO = memberService.getUserInfo(id);
-		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
+		Map<String,Object> menulist = sampleService.selectNewMenuList(commandMap.getMap());
+//		ArrayList a = (ArrayList) menulist.get("menulist");
+//		a.forEach(item->System.out.println(item));
 
 		mv.addObject("member",MemberVO);
 		mv.addObject("menulist",menulist.get("menulist"));
@@ -209,7 +211,7 @@ public class SampleController {
 
 
 		Map<String,Object> PageMap = sampleService.ReplyList(commandMap.getMap());
-		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
+		Map<String,Object> menulist = sampleService.selectNewMenuList(commandMap.getMap());
 
 		mv.addObject("map", map.get("map"));
 		mv.addObject("list", map.get("list"));
@@ -273,7 +275,7 @@ public class SampleController {
 		}
 
 
-		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
+		Map<String,Object> menulist = sampleService.selectNewMenuList(commandMap.getMap());
 
 
 		mv.addObject("menulist", menulist.get("menulist"));
@@ -356,7 +358,7 @@ public class SampleController {
 		}
 
 		Map<String,Object> contentslist = sampleService.selectBoardList(commandMap.getMap());
-		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
+		Map<String,Object> menulist = sampleService.selectNewMenuList(commandMap.getMap());
 
 
 		mv.addObject("paginationInfo", (PaginationInfo)contentslist.get("paginationInfo"));
@@ -399,7 +401,7 @@ public class SampleController {
 
 		Map<String,Object> map = sampleService.selectBoardDetail(commandMap.getMap(),request,response);
 		Map<String,Object> PageMap = sampleService.ReplyList(commandMap.getMap());
-		Map<String,Object> menulist = sampleService.selectMenuList(commandMap.getMap());
+		Map<String,Object> menulist = sampleService.selectNewMenuList(commandMap.getMap());
 
 		mv.addObject("paginationInfo", (PaginationInfo)PageMap.get("paginationInfo"));
 		mv.addObject("replylist", PageMap.get("result"));

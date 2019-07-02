@@ -4,7 +4,9 @@
 		<a href="index.html" class="list-group-item active main-color-bg">
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 			Dashboard
-		</a> <a href="<c:url value='/admin/board.do' />" class="list-group-item"> <span
+		</a> <a href="<c:url value='/admin/menu.do' />" class="list-group-item"> <span
+			class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span> 메뉴 <span
+			class="badge">${dashinfo.COUNTMENU }</span></a><a href="<c:url value='/admin/board.do' />" class="list-group-item"> <span
 			class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> 게시판 <span
 			class="badge">${dashinfo.COUNTBOARD }</span></a> <a href="<c:url value='/admin/boardcontents.do' />"
 			class="list-group-item"> <span class="glyphicon glyphicon-pencil"

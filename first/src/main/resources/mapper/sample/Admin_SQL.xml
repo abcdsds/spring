@@ -200,6 +200,7 @@
 	<select id="getCountAll" parameterType="Hashmap"
 		resultType="Hashmap">
 		select
+		(select count(*) from tb_menu) as countmenu,
 		(select count(*) from tb_member) as countmember,
 		(select count(*) from tb_log_member) as countlogmember,
 		(select

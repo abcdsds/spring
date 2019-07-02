@@ -79,6 +79,13 @@ public class SampleServiceImpl implements SampleService{
 		resultMap.put("menulist", sampleDAO.selectMenuList(map));
 		return resultMap;
 	}
+	
+	@Override
+	public Map<String, Object> selectNewMenuList(Map<String, Object> map) throws Exception {
+		Map<String, Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("menulist", sampleDAO.selectNewMenuList(map));
+		return resultMap;
+	}
 
 
 	@Override

@@ -35,12 +35,32 @@
 			</div>
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li><a href="<c:url value='/main.do' />">Dashboard</a></li>
-					<li><a href="<c:url value='/board.do' />">게시판</a></li>
-					<li><a href="<c:url value='/boardcontents.do' />">게시글</a></li>
-					<li class="active"><a href="<c:url value='/user.do' />">회원</a></li>
-					<li><a href="<c:url value='/log.do' />">접속기록</a></li>
-					<li><a href="<c:url value='/reply.do' />">댓글</a></li>
+					<c:choose>
+						<c:when test="${fn:length(menulist) > 0}">
+							<c:forEach var="row" items="${menulist}" varStatus="status">
+								<c:choose>
+									<c:when test="${row.MENU_KIND eq '0'}">
+
+										<li class="navbar-item dropdown"><a
+											class="nav-link dropdown-toggle" data-toggle="dropdown">${row.MENU_NAME}</a>
+											<ul class="dropdown-menu">
+												<c:forEach var="col" items="${menulist}" varStatus="status">
+													<c:if
+														test="${col.MENU_KIND.equals('1') and row.MENU_GROUP eq col.MENU_GROUP}">
+														<li><a
+															href="<c:url value='/board/board.do?BOARD_ID=' />${col.BO_ID}">${col.MENU_NAME}</a>
+														</li>
+													</c:if>
+												</c:forEach>
+											</ul></li>
+									</c:when>
+
+								</c:choose>
+
+
+							</c:forEach>
+						</c:when>
+					</c:choose>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<c:if test="${member.level == '0'}">

@@ -35,6 +35,7 @@
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="<c:url value='/admin/main.do' />">Dashboard</a></li>
+					<li><a href="<c:url value='/admin/menu.do' />">메뉴</a></li>
 					<li><a href="<c:url value='/admin/board.do' />">게시판</a></li>
 					<li class="active"><a
 						href="<c:url value='/admin/boardcontents.do' />">게시글</a></li>
