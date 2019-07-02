@@ -142,7 +142,7 @@
 							<div class="panel-body">
 								<form id="board" action="<c:url value='/admin/menuedit.do' />">
 									<div class="form-group">
-										<label>상위 메뉴 선택${fn:length(menulist)}</label> <select class="form-control"
+										<label>상위 메뉴 선택</label> <select class="form-control"
 											id="menu_parent" name="menu_parent">
 											
 											<c:choose>
@@ -157,7 +157,7 @@
 									</div>
 
 									<div class="form-group">
-										<label>게시판 선택${fn:length(boardlist)}</label> <select class="form-control" id="bo_id"
+										<label>게시판 선택</label> <select class="form-control" id="bo_id"
 											name="bo_id">
 											
 											<c:choose>

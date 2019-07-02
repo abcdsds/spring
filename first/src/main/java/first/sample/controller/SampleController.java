@@ -54,6 +54,8 @@ public class SampleController {
 		User memberVO = (User)principal;
 
 		commandMap.put("USER_ID", memberVO.getId());
+		commandMap.put("level", memberVO.getLevel());
+		
 		Map<String,Object> contentslist = null;
 		if(act == null || act.equals("contents")) {
 			contentslist = memberService.getOwnContents(commandMap.getMap());
@@ -108,6 +110,7 @@ public class SampleController {
 			id = memberVO.getId();
 		}
 		commandMap.put("USER_ID", memberVO.getId());
+		commandMap.put("level", memberVO.getLevel());
 
 		ModelAndView mv = new ModelAndView();
 
@@ -131,6 +134,7 @@ public class SampleController {
 			id = memberVO.getId();
 		}
 		commandMap.put("USER_ID", memberVO.getId());
+		commandMap.put("level", memberVO.getLevel());
 
 		ModelAndView mv = new ModelAndView();
 
@@ -196,6 +200,7 @@ public class SampleController {
 		}
 
 		commandMap.put("USER_ID", memberVO.getId());
+		commandMap.put("level", memberVO.getLevel());
 		Map<String,Object> map = sampleService.selectBoardDetail(commandMap.getMap(),request,response);
 
 		Map<String,Object> check =  (Map<String, Object>) map.get("map");
@@ -263,6 +268,7 @@ public class SampleController {
 
 		System.out.println(memberVO.getId());
 		commandMap.put("USER_ID", memberVO.getId());
+		commandMap.put("level", memberVO.getLevel());
 		Map<String,Object> board = sampleService.getBoardName(BOARD_ID); 
 
 		if(Integer.parseInt((String) board.get("BO_LEVEL")) < Integer.parseInt(memberVO.getLevel())) {
@@ -346,6 +352,7 @@ public class SampleController {
 
 
 		commandMap.put("USER_ID", memberVO.getId());
+		commandMap.put("level", memberVO.getLevel());
 		Map<String,Object> board = sampleService.getBoardName(BOARD_ID); 
 
 		if(Integer.parseInt((String) board.get("BO_LEVEL")) < Integer.parseInt(memberVO.getLevel())) {
@@ -383,6 +390,7 @@ public class SampleController {
 		User memberVO = (User)principal;
 
 		commandMap.put("USER_ID", memberVO.getId());
+		commandMap.put("level", memberVO.getLevel());
 
 		if(BOARD_ID == null || BOARD_ID.length() < 3) {
 			BOARD_ID = "main";
