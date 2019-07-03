@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans
+	xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/security
+     http://www.springframework.org/schema/security/spring-security.xsd
+     ">
+
+
+
+	<http use-expressions="true" auto-config='true'>
+		<form-login login-page="/login/login.do" default-target-url="/" />
+		<logout logout-url="/logout.do" logout-success-url="/login.do" />
+
+
+
+
+		<intercept-url pattern="/**/callback.do"
+			access="permitAll" />
+		<intercept-url pattern="/member/**"
+			access="hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_VIP')" />
+		<intercept-url pattern="/board/**"
+			access="hasAnyRole('ROLE_USER','ROLE_ADMIN', 'ROLE_VIP')" />
+		<intercept-url pattern="/admin/**"
+			access="hasRole('ROLE_ADMIN')" />
+
+		<session-management invalid-session-url="/login/login.do">
+
+			<concurrency-control max-sessions="1"
+				expired-url="/board/main.do" error-if-maximum-exceeded="true" />
+
+		</session-management>
+	</http>
+
+
+	<authentication-manager>
+		<authentication-provider>
+			<user-service>
+				<user name="guest" password="guest" authorities="ROLE_USER" />
+				<user name="admin" password="admin" authorities="ROLE_ADMIN" />
+			</user-service>
+		</authentication-provider>
+	</authentication-manager>
+
+</beans:beans>

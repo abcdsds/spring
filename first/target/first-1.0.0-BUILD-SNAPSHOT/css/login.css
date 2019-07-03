@@ -1,0 +1,41 @@
+/*회원가입
+#join .sns_btn{text-align:center; }
+#join .sns_btn dd{margin-top:12px;}
+#join .sns_btn dd:first-child{margin-top:0;}
+#join .sns_btn .sns_facebook a{border-color:#3a5896; background-position:20px 8px; background-color:#3a5896;color:#fff;}
+#join .sns_btn .sns_facebook a strong{color:#fff; }
+#join .sns_btn .sns_google a{border-color:#da4835; background-position:17px -55px; background-color:#da4835; color:#fff;}
+#join .sns_btn .sns_google a strong{color:#fff;}
+#join .sns_btn .sns_tweeter a{border-color:#448bcd; background-position:17px -120px; background-color:#448bcd; color:#fff;}
+#join .sns_btn .sns_tweeter a strong{color:#fff;}
+#join .sns_btn .sns_naver a{border-color:#27aa29; background-position:17px -186px; background-color:#27aa29; color:#fff;}
+#join .sns_btn .sns_naver a strong{color:#fff;}
+#join .sns_btn .sns_kakao a{border-color:#5c4146; background-position:17px -250px; background-color:#5c4146; color:#fff;}
+#join .sns_btn .sns_kakao a strong{color:#fff;}
+ */
+ 
+/* 로그인 */
+/* #snslogin{width:100%; background:#718fe4 url("../images/sub/login/bg_login.png") no-repeat 50% 100%; background-size:contain;} */
+
+#snslogin h2{font-size:40px; color:#fff;}
+#snslogin ul li{padding:20px; background:rgba(255,255,255,0.2); border-radius:10px;}
+
+#snslogin .sns_btn dd{margin-top:12px;}
+#snslogin .sns_btn dd:first-child{margin-top:0;}
+#snslogin .sns_btn dd a{display:block; width:100%; padding:12px 0; font-size:18px; color:#5e5e5e; 
+border:3px solid; border-radius:5px; background:rgba(255,255,255,0.6) url("http://www.pointpocket.net/images/sub/login/sns_ico1.png") no-repeat;}
+#snslogin .sns_btn .sns_facebook a{border-color:#3a5896; background-color:#3a5896; color:#fff;}
+#snslogin .sns_btn .sns_facebook a strong{color:#fff;}
+#snslogin .sns_btn .sns_google a{border-color:#da4835;  background-color:#da4835; color:#fff;}
+#snslogin .sns_btn .sns_google a strong{color:#fff;}
+#snslogin .sns_btn .sns_tweeter a{border-color:#448bcd; background-position:17px -120px; background-color:#448bcd; color:#fff;}
+#snslogin .sns_btn .sns_tweeter a strong{color:#fff;}
+#snslogin .sns_btn .sns_naver a{border-color:#1eC800; background-color:#1eC800; color:#fff;}
+#snslogin .sns_btn .sns_naver a strong{color:#fff;}
+#snslogin .sns_btn .sns_kakao a{border-color:#ffdd11; background-position:17px -250px; background-color:#ffdd11; color:#fff;}
+#snslogin .sns_btn .sns_kakao a strong{color:#fff;}
+#snslogin .sns_btn .sns_insta a{border-color:#3a5896; background-color:#3a5896; color:#fff;}
+#snslogin .sns_btn .sns_insta a strong{color:#fff;}
+#snslogin .sns_btn dd a{background:rgba(255,255,255,0.6); text-align:center;}
+
+

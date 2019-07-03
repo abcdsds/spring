@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+
+	<resultMap id="memberVO" type="User">
+		<result property="id" column="mem_id" />
+		<result property="username" column="mem_name" />
+		<result property="email" column="mem_email" />
+		<result property="nickname" column="mem_nickname" />
+		<result property="level" column="mem_level" />
+		<result property="regdate" column="mem_regdate" />
+		<result property="ssoType" column="mem_stype" />
+	</resultMap>
+
+
+	<!-- 회원등록 -->
+	<insert id="InsertCommonUser" parameterType="Hashmap"
+		useGeneratedKeys="true">
+		<selectKey keyProperty="idx" resultType="int" order="BEFORE">
+			SELECT
+			SEQ_TB_MEMBER_MEM_NUM.NEXTVAL FROM DUAL
+		</selectKey>
+	<![CDATA[
+		
+		INSERT INTO TB_MEMBER
+		(
+			mem_num,
+		    mem_id, 
+		    mem_email, 
+		    mem_password, 
+		    mem_name, 
+		    mem_nickname, 
+		    mem_level, 
+		    mem_regdate
+
+		    
+		)
+		VALUES
+		(
+			#{idx}, 
+		    #{user_id}, 
+		    #{email}, 
+		    #{password}, 
+		    #{username}, 
+		    #{nickname}, 
+		    '2', 
+		    SYSDATE
+		    
+		)
+	]]>
+	</insert>
+
+	<!-- 회원 접속로그 등록 -->
+	<insert id="insertUserLog" parameterType="User"
+		useGeneratedKeys="true">
+		<selectKey keyProperty="idx" resultType="int" order="BEFORE">
+			SELECT
+			SEQ_TB_LOG_MEMBER_LOG_NUM.NEXTVAL FROM DUAL
+		</selectKey>
+	<![CDATA[
+		
+		INSERT INTO TB_LOG_MEMBER
+		(
+			log_num,
+		    log_id, 
+		    log_date, 
+		    log_ip, 
+		    log_useragent		    
+		)
+		VALUES
+		(
+			#{idx}, 
+		    #{id}, 
+		    SYSDATE, 
+		    #{ip},
+		    #{useragent} 
+		    
+		)
+	]]>
+	</insert>
+
+	<!-- 회원정보조회 -->
+	<select id="login" parameterType="Hashmap" resultMap="memberVO">
+		SELECT
+		mem_id, mem_email, mem_name, mem_nickname, mem_level,
+		mem_regdate,
+		mem_snum,
+		mem_stype,
+		mem_password
+		FROM tb_member
+		WHERE mem_id = #{id}
+		AND
+		mem_password = #{password}
+	</select>
+
+
+	<!-- 전체회원수 조회 -->
+	<select id="getCountAllUser" parameterType="Hashmap"
+		resultType="String">
+		SELECT COUNT(*) FROM TB_MEMBER
+	</select>
+
+	<!-- 회원리스트 조회 -->
+	<select id="getAllUser" parameterType="Hashmap"
+		resultType="String">
+		SELECT * FROM TB_MEMBER
+	</select>
+
+	<!-- 회원소셜아이디중복조회 -->
+	<select id="checksocialid" parameterType="User" resultType="int">
+		SELECT COUNT(*) FROM TB_MEMBER
+		WHERE mem_snum = #{ssoNumber} and
+		mem_stype = #{ssoType}
+	</select>
+
+	<!-- 회원등급조회 -->
+	<select id="getRole" parameterType="User" resultType="String">
+		SELECT
+		mem_level FROM TB_MEMBER
+		WHERE mem_id = #{id}
+	</select>
+
+	<!-- 회원정보조회 -->
+	<select id="getUserInfo" parameterType="User"
+		resultMap="memberVO">
+		SELECT
+		mem_id, mem_email, mem_name, mem_nickname, mem_level,
+		mem_regdate,
+		mem_snum,
+		mem_stype
+		FROM tb_member
+		WHERE mem_id = #{id}
+	</select>
+
+
+	<!-- 회원이메일중복조회 -->
+	<select id="emailReduplicationCheck" parameterType="User"
+		resultType="int">
+		SELECT COUNT(*) FROM MEMBER
+		WHERE mem_email = #{email}
+	</select>
+
+	<!-- 회원닉네임중복조회 -->
+	<select id="nickReduplicationCheck" parameterType="User"
+		resultType="int">
+		SELECT COUNT(*) FROM MEMBER
+		WHERE mem_nickname = #{nickname}
+	</select>
+
+	<!-- 회원등록 -->
+	<insert id="insertUser" parameterType="User"
+		useGeneratedKeys="true">
+		<selectKey keyProperty="idx" resultType="int" order="BEFORE">
+			SELECT
+			SEQ_TB_MEMBER_MEM_NUM.NEXTVAL FROM DUAL
+		</selectKey>
+	<![CDATA[
+		
+		INSERT INTO TB_MEMBER
+		(
+			mem_num,
+		    mem_id, 
+		    mem_email, 
+		    mem_password, 
+		    mem_name, 
+		    mem_nickname, 
+		    mem_level, 
+		    mem_regdate,
+		    mem_snum,
+		    mem_stype
+		    
+		)
+		VALUES
+		(
+			#{idx}, 
+		    #{id}, 
+		    #{email}, 
+		    '1111111', 
+		    #{username}, 
+		    #{nickname}, 
+		    #{level}, 
+		    SYSDATE, 
+		    #{ssoNumber},
+		    #{ssoType} 
+		    
+		)
+	]]>
+	</insert>
+	<!-- 회원 작성글 조회 -->
+	<select id="getOwnContents" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" /> 
+		<![CDATA[
+		SELECT 
+		   ROW_NUMBER() OVER (ORDER BY BOARD_IDX DESC) RNUM,
+		   BOARD_IDX,
+		   BOARD_TITLE,
+		   BOARD_HIT_CNT,
+		   BOARD_DTM,
+		   USER_NICKNAME,
+		   BOARD_ID,
+		   (SELECT BO_NAME FROM TB_BOARDCONFIG WHERE BO_ID = a.BOARD_ID) BO_NAME 
+		FROM TB_BOARD a 
+		WHERE USER_ID = #{USER_ID} AND del_gb = 'N'
+		]]>
+
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			<choose>
+				<when test="SCH_TYPE.equals('TITLE_CONTENTS')">
+					AND (BOARD_CONTENTS LIKE CONCAT ('%'||
+					#{SCH_KEYWORD},'%') OR BOARD_TITLE LIKE CONCAT ('%'||
+					#{SCH_KEYWORD},'%'))
+				</when>
+
+				<otherwise>
+					AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+				</otherwise>
+			</choose>
+		</if>
+
+
+		<include refid="common.pagingPost" />
+
+	</select>
+
+	<select id="getOwnReplys" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" /> 
+		<![CDATA[
+		SELECT 
+		   ROW_NUMBER() OVER (ORDER BY IDX DESC) RNUM,
+		   IDX REPLY_IDX,
+		   PARENT_IDX BOARD_IDX,
+		   (SELECT BO_NAME FROM TB_BOARDCONFIG WHERE BO_ID = (SELECT BOARD_ID FROM TB_BOARD WHERE BOARD_IDX = a.PARENT_IDX)) BO_NAME,
+		   TITLE BOARD_TITLE,
+		   REPLY_DTM BOARD_DTM,
+		   USER_NICKNAME,
+		   (SELECT BOARD_ID FROM TB_BOARD WHERE BOARD_IDX = a.PARENT_IDX) BOARD_ID
+		 FROM TB_REPLY_BOARD a
+		 WHERE USER_ID = #{USER_ID} AND REPLY_DEL = 'N'
+		 AND (SELECT DEL_GB FROM TB_BOARD WHERE BOARD_IDX = a.PARENT_IDX) = 'N'
+		]]>
+
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+
+		</if>
+		<include refid="common.pagingPost" />
+
+	</select>
+
+
+	<!-- 유저 닉네임,이메일 변경 -->
+	<update id="updateUserInfo" parameterType="User">
+		UPDATE tb_member SET
+		mem_email = #{email},
+		mem_nickname = #{nickname}
+		WHERE mem_id = #{id}
+	</update>
+
+
+</mapper>

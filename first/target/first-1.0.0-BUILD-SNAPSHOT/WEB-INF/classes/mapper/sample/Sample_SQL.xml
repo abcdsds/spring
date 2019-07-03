@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sample">
+
+
+	<!-- 메뉴리스트 조회 -->
+	<select id="getAllMenu" parameterType="Hashmap"
+		resultType="Hashmap">
+		<![CDATA[
+		  Select
+	      MENU_NUM,
+	      MENU_PARENT,
+	      MENU_DEPTH,
+	      MENU_KIND,
+	      MENU_LEVEL,
+	      MENU_GROUP,
+	      BO_ID,
+	      MENU_NAME
+	      FROM TB_MENU b
+	      WHERE menu_level >= #{level}
+		  order by menu_group desc, menu_parent desc , menu_depth asc
+		]]>
+	</select>
+
+
+	<select id="selectBoardList" parameterType="hashmap"
+		resultType="hashmap">
+		<include refid="common.pagingPre" /> 
+	<![CDATA[
+		SELECT
+		    (select bo_name from tb_boardconfig where bo_id = B.board_id) BO_NAME,
+			ROW_NUMBER() OVER (ORDER BY BOARD_IDX DESC) RNUM,
+			BOARD_IDX,
+		    BOARD_TITLE, 
+		    BOARD_CONTENTS, 
+		    BOARD_HIT_CNT, 
+		    DEL_GB, 
+		    BOARD_DTM, 
+		    USER_ID,
+		    USER_NICKNAME,
+		    BOARD_ID
+		FROM
+			TB_BOARD B
+		WHERE
+			DEL_GB = 'N'
+	]]>
+		<choose>
+			<when test="BOARD_ID != null">
+
+				AND
+				BOARD_ID = #{BOARD_ID}
+			</when>
+			<otherwise>
+				AND
+				BOARD_ID = 'main'
+
+			</otherwise>
+		</choose>
+
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			<choose>
+				<when test="SCH_TYPE.equals('TITLE_CONTENTS')">
+					AND (BOARD_CONTENTS LIKE CONCAT ('%'||
+					#{SCH_KEYWORD},'%') OR BOARD_TITLE LIKE CONCAT ('%'||
+					#{SCH_KEYWORD},'%'))
+				</when>
+
+				<otherwise>
+					AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+				</otherwise>
+			</choose>
+		</if>
+		<include refid="common.pagingPost" />
+	</select>
+
+	<select id="selectMenuList" parameterType="hashmap"
+		resultType="hashmap">
+		<choose>
+			<when test="USER_ID != null">
+	<![CDATA[
+	   
+		select * from tb_boardconfig 
+		where bo_level >= 
+		(select 
+		    mem_level 
+		 from 
+		    tb_member 
+		 where 
+		    mem_id = #{USER_ID}
+		 )
+		
+	]]>
+			</when>
+			<otherwise>
+	   <![CDATA[
+				select * from tb_boardconfig 
+		]]>
+
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="boardsearch" parameterType="hashmap"
+		resultType="hashmap">
+		<include refid="common.pagingPre" /> 
+	<![CDATA[
+		SELECT
+			ROW_NUMBER() OVER (ORDER BY BOARD_IDX DESC) RNUM,
+			BOARD_IDX,
+		    BOARD_TITLE, 
+		    BOARD_CONTENTS, 
+		    BOARD_HIT_CNT, 
+		    DEL_GB, 
+		    BOARD_DTM, 
+		    USER_ID,
+		    USER_NICKNAME,
+		    BOARD_ID
+		FROM
+			TB_BOARD
+		WHERE
+		    BOARD_ID = #{BOARD_ID}
+		    AND	DEL_GB = 'N'
+			AND ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_VALUE},'%')
+	]]>
+		<include refid="common.pagingPost" />
+	</select>
+
+
+
+
+	<insert id="insertBoard" parameterType="hashmap"
+		useGeneratedKeys="true" keyProperty="IDX">
+		<selectKey keyProperty="IDX" resultType="string"
+			order="BEFORE">
+			SELECT SEQ_TB_BOARD_BOARD_IDX.NEXTVAL FROM DUAL
+		</selectKey>
+	<![CDATA[
+		
+		INSERT INTO TB_BOARD
+		(
+			BOARD_IDX,
+		    BOARD_TITLE, 
+		    BOARD_CONTENTS, 
+		    BOARD_HIT_CNT, 
+		    DEL_GB, 
+		    BOARD_DTM, 
+		    USER_ID,
+		    USER_NICKNAME,
+		    BOARD_ID
+		)
+		VALUES
+		(
+			#{IDX}, 
+		    #{TITLE}, 
+		    #{CONTENTS}, 
+		    0, 
+		    'N', 
+		    SYSDATE, 
+		    #{USER_ID},
+		    #{USER_NICKNAME},
+		    #{BOARD_ID}
+		)
+	]]>
+	</insert>
+
+
+
+	<update id="updateHitCnt" parameterType="hashmap">
+	<![CDATA[
+		UPDATE TB_BOARD 
+		SET
+			BOARD_HIT_CNT = NVL(BOARD_HIT_CNT, 0) + 1
+		WHERE
+			BOARD_IDX = #{IDX}	
+	]]>
+	</update>
+
+	<select id="GetBoardName" parameterType="String"
+		resultType="hashmap">
+	<![CDATA[
+		SELECT
+			BO_NAME,
+			BO_LEVEL
+		FROM 
+			TB_BOARDCONFIG
+		WHERE
+			BO_ID = #{BOARD_ID}		
+	]]>
+	</select>
+
+	<select id="selectBoardDetail" parameterType="hashmap"
+		resultType="hashmap">
+	<![CDATA[
+		SELECT
+			BOARD_IDX,
+		    BOARD_TITLE, 
+		    BOARD_CONTENTS, 
+		    BOARD_HIT_CNT, 
+		    DEL_GB, 
+		    BOARD_DTM, 
+		    USER_ID,
+		    USER_NICKNAME,
+		    BOARD_ID,
+		    (SELECT COUNT(*) FROM TB_REPLY_BOARD WHERE PARENT_IDX = A.BOARD_IDX) countreply,
+		    (SELECT prev FROM (SELECT LEAD(BOARD_IDX, 1) OVER (ORDER BY BOARD_IDX DESC) prev, BOARD_ID,BOARD_IDX FROM TB_BOARD WHERE BOARD_ID = 'main') AA WHERE AA.BOARD_IDX = #{IDX}) prev,
+		    (SELECT next FROM (SELECT lag(BOARD_IDX, 1) OVER (ORDER BY BOARD_IDX DESC) next, BOARD_ID,BOARD_IDX FROM TB_BOARD WHERE BOARD_ID = 'main') AA WHERE AA.BOARD_IDX = #{IDX}) next
+		    
+		FROM 
+			TB_BOARD A
+		WHERE
+			BOARD_IDX = #{IDX}		
+	]]>
+	</select>
+
+
+
+	<update id="updateContents" parameterType="Hashmap">
+		UPDATE tb_board bb
+		SET
+		BOARD_TITLE = #{TITLE},
+		BOARD_CONTENTS = #{CONTENTS}
+		WHERE BOARD_IDX =
+		#{IDX}
+		AND
+		( bb.USER_ID = #{USER_ID}
+		OR
+		(select MEM_LEVEL from tb_member where MEM_ID = #{USER_ID}) = '0' )
+	</update>
+
+	<update id="deleteBoard" parameterType="hashmap">
+	<![CDATA[
+		UPDATE TB_BOARD
+		SET
+			DEL_GB = 'Y'
+		WHERE
+			BOARD_IDX = #{IDX}
+	]]>
+	</update>
+
+	<insert id="insertFile" parameterType="hashmap">
+	<![CDATA[
+		INSERT INTO TB_FILE
+		(
+			IDX,
+			BOARD_IDX,
+			ORIGINAL_FILE_NAME,
+			STORED_FILE_NAME,
+			FILE_SIZE,
+			CREA_ID
+		)
+		VALUES
+		(
+			SEQ_TB_FILE_IDX.NEXTVAL,
+			#{BOARD_IDX},
+			#{ORIGINAL_FILE_NAME},
+			#{STORED_FILE_NAME},
+			#{FILE_SIZE},
+			'Admin'
+		)
+	]]>
+	</insert>
+
+
+	<select id="selectFileList" parameterType="hashmap"
+		resultType="hashmap">
+	<![CDATA[
+		SELECT
+		    IDX,
+		    ORIGINAL_FILE_NAME,
+		    ROUND(FILE_SIZE/1024,1) AS FILE_SIZE
+		FROM
+		    TB_FILE
+		WHERE
+		    BOARD_IDX = #{IDX}
+		    AND DEL_GB = 'N'
+	]]>
+	</select>
+
+
+
+	<update id="deleteFileList" parameterType="hashmap">
+	<![CDATA[
+		UPDATE TB_FILE SET 
+			DEL_GB = 'Y' 
+		WHERE 
+			BOARD_IDX = #{IDX}	
+	]]>
+	</update>
+
+	<update id="updateFile" parameterType="hashmap">
+	<![CDATA[
+		UPDATE TB_FILE SET
+			DEL_GB = 'N'
+		WHERE
+			IDX = #{FILE_IDX}	
+	]]>
+	</update>
+
+
+	<!-- 게시판아이디 중복체크 -->
+	<select id="getBoardRole" parameterType="Hashmap"
+		resultType="String">
+		select bo_level
+		from tb_boardconfig
+		where bo_id = #{board_id}
+
+	</select>
+
+
+
+
+
+
+</mapper>

@@ -1,13 +1,10 @@
 package first.test.test;
 
 import java.io.IOException;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
 import com.github.scribejava.apis.FacebookApi;
-import com.github.scribejava.apis.GoogleApi20;
-import com.github.scribejava.apis.NaverApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;

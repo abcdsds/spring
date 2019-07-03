@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="admin">
+	<!-- 아이디중복체크 -->
+	<select id="DuplicateUserId" parameterType="Hashmap"
+		resultType="String">
+		select count(*)
+		from tb_member where mem_id = #{user_id}
+
+	</select>
+
+	<!-- 게시판아이디 중복체크 -->
+	<select id="DuplicateBoardId" parameterType="Hashmap"
+		resultType="String">
+		select count(*)
+		from tb_boardconfig where bo_id =
+		#{board_id}
+
+	</select>
+
+	<!-- 유저아이디 삭제 -->
+	<delete id="DeleteUserId" parameterType="Hashmap">
+		delete from tb_member
+		where MEM_NUM = #{USER_NO}
+
+	</delete>
+
+	<!-- 댓글 수정 -->
+	<update id="updateMenu" parameterType="hashmap">
+    <![CDATA[
+        UPDATE TB_MENU
+          
+        SET
+     ]]>
+		<choose>
+			<when test="menu_parent != null and bo_id != null">
+			<![CDATA[
+				MENU_PARENT = #{menu_parent},
+				BO_ID = #{bo_id},
+				MENU_NAME = (select bo_name from tb_boardconfig where bo_id = #{bo_id}),
+				MENU_GROUP = #{menu_parent},
+            ]]>
+			</when>
+			<otherwise>
+			<![CDATA[
+			
+			    MENU_NAME = #{menu_name},
+			
+			]]>
+			</otherwise>
+		</choose>
+		<![CDATA[
+		MENU_LEVEL = #{menu_level},
+		MENU_DEPTH = #{menu_depth}
+		WHERE
+		MENU_NUM = #{menu_num}
+
+        ]]>
+
+	</update>
+
+	<!-- 댓글 수정 -->
+	<update id="updateReply" parameterType="hashmap">
+    <![CDATA[
+        UPDATE TB_REPLY_BOARD
+        SET
+            TITLE = #{TITLE},
+            REPLY_DTM = SYSDATE
+            
+        WHERE
+            IDX = #{REPLYIDX}
+        
+    ]]>
+	</update>
+
+	<!-- 게시판 삭제 -->
+	<delete id="DeleteBoard" parameterType="Hashmap">
+		delete from
+		tb_boardconfig
+		where BO_NUM = #{BOARD_NO}
+
+	</delete>
+
+	<!-- 게시글 삭제 -->
+	<delete id="DeleteContent" parameterType="Hashmap">
+		delete from tb_board
+		where BOARD_IDX = #{BOARD_NO}
+
+	</delete>
+
+	<!-- 리플 삭제 -->
+	<delete id="DeleteReply" parameterType="Hashmap">
+		delete from
+		TB_REPLY_BOARD
+		where IDX = #{REPLY_NO}
+
+	</delete>
+
+	<!-- 게시글 삭제 -->
+	<delete id="DeleteMenu" parameterType="Hashmap">
+		DELETE
+		FROM
+		TB_MENU
+		WHERE
+		MENU_NUM = #{MENU_NUM}
+		OR
+		MENU_PARENT = #{MENU_NUM}
+
+	</delete>
+
+
+	<!-- 유저 닉네임,이메일,레벨 변경 -->
+	<update id="updateUserInfo" parameterType="Hashmap">
+		UPDATE tb_member SET
+		mem_email = #{email},
+		mem_nickname = #{nickname},
+		mem_level = #{level}
+		WHERE mem_id = #{user_id}
+	</update>
+
+	<!-- 게시글 변경 -->
+	<update id="updatePost" parameterType="Hashmap">
+		UPDATE tb_board bb
+		SET
+		BOARD_ID = #{BOARD_ID},
+		BOARD_TITLE = #{TITLE},
+		BOARD_CONTENTS =
+		#{CONTENTS}
+		WHERE BOARD_IDX = #{IDX}
+		AND
+		( bb.USER_ID = #{USER_ID}
+		OR
+		(select MEM_LEVEL from tb_member where MEM_ID = #{USER_ID}) = '0' )
+	</update>
+
+
+	<select id="getMainMenuList" parameterType="Hashmap"
+		resultType="Hashmap">
+		select
+		MENU_NUM,MENU_PARENT,MENU_DEPTH,MENU_GROUP,MENU_KIND,MENU_LEVEL,MENU_NAME from
+		tb_menu where menu_kind = 0
+	</select>
+
+
+	<select id="getMenuInfo" parameterType="Hashmap"
+		resultType="Hashmap">
+		SELECT
+		menu_num,
+		menu_parent,
+		menu_depth,
+		menu_kind,
+		menu_level,
+		menu_group,
+		bo_id,
+		menu_name
+		FROM tb_menu
+		WHERE menu_num = #{MENU_NUM}
+	</select>
+
+	<select id="getUserInfo" parameterType="Hashmap"
+		resultType="Hashmap">
+		SELECT
+		mem_id, mem_email, mem_name, mem_nickname, mem_level,
+		mem_regdate,
+		mem_snum,
+		mem_stype
+		FROM tb_member
+		WHERE mem_id = #{id}
+	</select>
+
+	<select id="getBoardInfo" parameterType="Hashmap"
+		resultType="Hashmap">
+		SELECT
+		bo_id,
+		bo_name,
+		bo_level,
+		bo_num
+		FROM tb_boardconfig
+		WHERE bo_num = #{bo_num}
+	</select>
+
+	<update id="updateBoardInfo" parameterType="Hashmap">
+		UPDATE tb_boardconfig
+		SET
+		bo_name = #{bo_name},
+		bo_level = #{bo_level}
+		WHERE bo_num = #{bo_num}
+	</update>
+
+	<update id="deleteBoardInfo" parameterType="Hashmap">
+		UPDATE tb_boardconfig
+		SET
+		bo_name = #{bo_name},
+		bo_level = #{bo_level}
+		WHERE bo_num = #{bo_num}
+	</update>
+
+	<!-- 전체회원수 조회 -->
+	<select id="getCountAll" parameterType="Hashmap"
+		resultType="Hashmap">
+		select
+		(select count(*) from tb_menu) as countmenu,
+		(select count(*) from tb_member) as countmember,
+		(select count(*) from tb_log_member) as countlogmember,
+		(select
+		count(*) from tb_board) as countcontent,
+		(select count(*) from
+		tb_boardconfig) as countboard,
+		(select count(*) from
+		TB_REPLY_BOARD) as
+		countreply
+		from dual
+	</select>
+
+
+	<!-- 접속기록 조회 10개만 -->
+	<select id="getUserLog10" parameterType="Hashmap"
+		resultType="Hashmap">
+		select *
+		from tb_log_member T1
+		LEFT JOIN TB_MEMBER T2 ON (T2.mem_id =
+		T1.log_id)
+		<![CDATA[ 
+		where rownum <= 10 order by log_num desc
+		]]>
+
+	</select>
+
+
+	<!-- 회원리스트 조회 -->
+	<select id="getAllUser" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" />
+		<![CDATA[
+		Select ROW_NUMBER() OVER (ORDER BY MEM_NUM DESC) RNUM,
+      MEM_ID,
+      MEM_EMAIL,
+      MEM_LEVEL,
+      MEM_NAME,
+      MEM_NICKNAME,
+      MEM_NUM,
+      MEM_REGDATE,
+      MEM_STYPE,
+      (SELECT LOG_DATE FROM (SELECT LOG_DATE,LOG_ID FROM TB_LOG_MEMBER ORDER BY LOG_NUM DESC) BBB WHERE B.MEM_ID = BBB.LOG_ID AND ROWNUM <= 1) BB
+       FROM TB_MEMBER B
+		]]>
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			<choose>
+				<when test="SCH_TYPE.equals('MEM_LEVEL') ">
+					<if test="SCH_KEYWORD.equals('운영자') || SCH_KEYWORD.equals('운영')">
+						WHERE ${SCH_TYPE} = '0'
+					</if>
+					<if
+						test="SCH_KEYWORD.equals('특별회원') || SCH_KEYWORD.equals('특별') ">
+						WHERE ${SCH_TYPE} = '1'
+					</if>
+
+					<if
+						test="SCH_KEYWORD.equals('일반회원') || SCH_KEYWORD.equals('일반')">
+						WHERE ${SCH_TYPE} = '2'
+					</if>
+
+				</when>
+
+				<otherwise>
+
+					WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+
+				</otherwise>
+			</choose>
+		</if>
+		<include refid="common.pagingPost" />
+	</select>
+
+
+	<!-- 로그리스트 조회 -->
+	<select id="getAllLog" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" />
+		<![CDATA[
+		  Select ROW_NUMBER() OVER (ORDER BY LOG_NUM DESC) RNUM,
+	      LOG_NUM,
+	      LOG_ID,
+	      LOG_DATE,
+	      LOG_IP,
+	      LOG_USERAGENT,
+	      (SELECT MEM_NAME FROM TB_MEMBER WHERE B.LOG_ID = MEM_ID) MEM_NAME,
+	      (SELECT MEM_LEVEL FROM TB_MEMBER WHERE B.LOG_ID = MEM_ID) MEM_LEVEL
+	      FROM TB_LOG_MEMBER B
+		]]>
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+		</if>
+		<include refid="common.pagingPost" />
+	</select>
+
+	<!-- 메뉴리스트 조회 -->
+	<select id="getAllMenu" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" />
+		<![CDATA[
+		  Select ROW_NUMBER() OVER (ORDER BY MENU_NUM DESC) RNUM,
+	      MENU_NUM,
+	      MENU_PARENT,
+	      MENU_DEPTH,
+	      MENU_KIND,
+	      MENU_LEVEL,
+	      MENU_GROUP,
+	      BO_ID,
+	      MENU_NAME,
+	      (SELECT MENU_NAME FROM TB_MENU WHERE MENU_NUM = b.MENU_PARENT) PARENT_NAME
+	      FROM TB_MENU b
+	      
+		]]>
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+		</if>
+		<![CDATA[
+		 order by menu_group desc, menu_parent desc , menu_depth asc
+		]]>
+		<include refid="common.pagingPost" />
+	</select>
+
+	<!-- 게시판목록 조회 -->
+	<select id="getAllBoard" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" />
+		<![CDATA[
+		  Select ROW_NUMBER() OVER (ORDER BY BO_NUM DESC) RNUM,
+	      BO_NUM,
+	      BO_NAME,
+	      BO_ID,
+	      BO_LEVEL
+	      FROM TB_BOARDCONFIG
+		]]>
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			<choose>
+				<when test="SCH_TYPE.equals('MEM_LEVEL') ">
+					<if test="SCH_KEYWORD.equals('운영자') || SCH_KEYWORD.equals('운영')">
+						WHERE ${SCH_TYPE} = '0'
+					</if>
+					<if
+						test="SCH_KEYWORD.equals('특별회원') || SCH_KEYWORD.equals('특별') ">
+						WHERE ${SCH_TYPE} = '1'
+					</if>
+
+					<if
+						test="SCH_KEYWORD.equals('일반회원') || SCH_KEYWORD.equals('일반')">
+						WHERE ${SCH_TYPE} = '2'
+					</if>
+
+				</when>
+
+				<otherwise>
+
+					WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+
+				</otherwise>
+			</choose>
+		</if>
+		<include refid="common.pagingPost" />
+	</select>
+
+	<!-- 컨텐츠 조회 -->
+	<select id="getAllContents" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" />
+		<![CDATA[
+		  Select ROW_NUMBER() OVER (ORDER BY BOARD_IDX DESC) RNUM,
+	      BOARD_IDX,
+	      BOARD_TITLE,
+	      BOARD_CONTENTS,
+	      BOARD_HIT_CNT,
+	      DEL_GB,
+	      BOARD_DTM,
+	      USER_ID,
+	      USER_NICKNAME,
+	      BOARD_ID
+	      FROM TB_BOARD
+		]]>
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+		</if>
+		<include refid="common.pagingPost" />
+	</select>
+
+	<!-- 댓글 조회 -->
+	<select id="getAllReply" parameterType="Hashmap"
+		resultType="Hashmap">
+		<include refid="common.pagingPre" />
+		<![CDATA[
+		  Select ROW_NUMBER() OVER (ORDER BY IDX DESC) RNUM,
+	      IDX,
+	      TITLE,
+	      REPLY_DEL,
+	      REPLY_DTM,
+	      USER_ID,
+	      USER_NICKNAME
+	      FROM TB_REPLY_BOARD
+		]]>
+		<if test="SCH_TYPE != null and SCH_KEYWORD != null">
+			WHERE ${SCH_TYPE} LIKE CONCAT ('%'|| #{SCH_KEYWORD},'%')
+		</if>
+		<include refid="common.pagingPost" />
+	</select>
+
+	<!-- 유저 밴 해제 1:밴 0:밴아님 -->
+	<update id="updateUserBan" parameterType="User">
+		UPDATE TB_BAN_MEMBER
+		SET
+		BAN_CHECK = '0' WHERE BAN_ID = #{id}
+	</update>
+
+	<!-- 유저 닉네임 변경 -->
+	<update id="updateNickname" parameterType="User">
+		UPDATE tb_member SET
+		mem_nickname = #{nickname} WHERE mem_id = #{id}
+	</update>
+
+
+	<!-- 게시판 등록 -->
+	<insert id="InsertBoard" parameterType="Hashmap"
+		useGeneratedKeys="true">
+		<selectKey keyProperty="idx" resultType="int" order="BEFORE">
+			SELECT
+			SEQ_TB_BOARDCONFIG_BO_NUM.NEXTVAL FROM DUAL
+		</selectKey>
+	<![CDATA[
+		
+		INSERT INTO TB_BOARDCONFIG
+		(
+			bo_num,
+		    bo_name, 
+		    bo_id, 
+		    bo_level
+		    
+		)
+		VALUES
+		(
+			#{idx}, 
+		    #{board_name},  
+		    #{board_id},
+		    #{board_level}
+		    
+		)
+	]]>
+	</insert>
+
+	<!-- 메뉴 등록 -->
+	<insert id="InsertMenu" parameterType="Hashmap"
+		useGeneratedKeys="true">
+		<selectKey keyProperty="idx" resultType="int" order="BEFORE">
+			SELECT
+			SEQ_TB_MENU_NUM.NEXTVAL FROM DUAL
+		</selectKey>
+	<![CDATA[
+		
+		INSERT INTO TB_MENU
+		(
+			menu_num,
+			menu_parent,
+			menu_depth,
+			menu_kind,
+			menu_level,
+			menu_group,
+			bo_id,
+		    menu_name
+
+		)
+   ]]>
+		<choose>
+			<when test="menu_parent != null">
+    <![CDATA[
+		VALUES
+		(
+			#{idx}, 
+		    #{menu_parent},  
+		    #{menu_depth},
+		    '1',
+		    #{menu_level},
+		    #{menu_parent},
+		    #{bo_id},
+		    (select bo_name from tb_boardconfig where bo_id = #{bo_id})
+		    
+		)
+	]]>
+			</when>
+			<otherwise>
+   <![CDATA[
+		VALUES
+		(
+			#{idx}, 
+		    null,  
+		    #{menu_depth},
+		    '0',
+		    #{menu_level},
+		    #{idx},
+		    null,
+		    #{menu_name}
+		    
+		)
+	]]>
+			</otherwise>
+		</choose>
+	</insert>
+
+	<!-- 회원등록 -->
+	<insert id="InsertUser" parameterType="Hashmap"
+		useGeneratedKeys="true">
+		<selectKey keyProperty="idx" resultType="int" order="BEFORE">
+			SELECT
+			SEQ_TB_MEMBER_MEM_NUM.NEXTVAL FROM DUAL
+		</selectKey>
+	<![CDATA[
+		
+		INSERT INTO TB_MEMBER
+		(
+			mem_num,
+		    mem_id, 
+		    mem_email, 
+		    mem_password, 
+		    mem_name, 
+		    mem_nickname, 
+		    mem_level, 
+		    mem_regdate,
+		    mem_snum,
+		    mem_stype
+		    
+		)
+		VALUES
+		(
+			#{idx}, 
+		    #{user_id}, 
+		    #{email}, 
+		    #{password}, 
+		    #{username}, 
+		    #{nickname}, 
+		    #{level}, 
+		    SYSDATE, 
+		    #{ssoNumber},
+		    #{ssoType} 
+		    
+		)
+	]]>
+	</insert>
+
+
+
+
+
+</mapper>
